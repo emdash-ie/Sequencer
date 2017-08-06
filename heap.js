@@ -156,11 +156,13 @@ function* randomIntegerGenerator(length, min, max) {
 /**
  * Tests the min heap.
  *
- * <p>Fills it with random numbers and then prints its contents to the screen.
+ * <p>Fills it with random numbers and then empties it, checking that
+ * the numbers are removed in non-descending order.
  *
  * @param min The lower limit to use for generating the random numbers.
  * @param max The upper limit to use for generating the random numbers.
  * @param length The number of random numbers to generate.
+ * @return {boolean} true if the heap passes the test, false otherwise
  */
 function testMinHeap(length = 10, min = 0, max = 100) {
     let testHeap = Object.create(MinHeap);
@@ -169,7 +171,15 @@ function testMinHeap(length = 10, min = 0, max = 100) {
         testHeap.add(number);
     }
 
-    console.log(testHeap);
-}
+    let lastValue;
 
-testMinHeap();
+    while (!testHeap.isEmpty()) {
+        let thisValue = testHeap.removeMin();
+        if (lastValue !== undefined && thisValue < lastValue) {
+            return false;
+        }
+        lastValue = thisValue
+    }
+
+    return true;
+}
