@@ -84,19 +84,24 @@ let OctaveScale = {
         let divide = Math.trunc(noteNumber / this.notes.length);
         let mod = noteNumber % this.notes.length;
 
-        let extendedNoteNumber = divide * 12 + this.notes[mod];
+        let extendedNoteNumber = (divide + this.octave) * 12 + this.notes[mod];
 
         return this.tuningSystem.frequencyOf(extendedNoteNumber);
     },
-    createScale: function({tuningSystem=EqualTemperament, scaleNotes}) {
+    createScale: function({
+            scaleNotes,
+            tuningSystem=EqualTemperament,
+            octave=0,
+        }) {
         let newScale = Object.create(this);
         newScale.tuningSystem = tuningSystem;
         newScale.notes = scaleNotes;
+        newScale.octave = octave;
         return newScale;
     }
 };
 
-let MajorPentatonicScale = OctaveScale.createScale({scaleNotes: [0, 2, 4, 7, 9]});
+let MajorPentatonicScale = OctaveScale.createScale({scaleNotes: [0, 2, 4, 7, 9], octave: -2});
 
 Sequencer.init(MajorPentatonicScale);
 
