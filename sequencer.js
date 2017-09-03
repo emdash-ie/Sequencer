@@ -53,7 +53,6 @@ let Sequencer = {
                 let oscillator = this.audioContext.createOscillator();
                 oscillator.type = 'sine';
                 oscillator.frequency.value = this.scale.frequencyOf(thisNote.note);
-                console.log('Note frequency: ' + this.scale.frequencyOf(thisNote.note));
 
                 oscillator.connect(this.output);
                 oscillator.start(this.nextNoteTime);
