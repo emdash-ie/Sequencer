@@ -86,6 +86,15 @@ let Sequencer = {
         window.setTimeout(pauseFunction, secondsFromNow * 1000);
         this.playing = false;
     },
+    stop: function(secondsFromNow = 0) {
+        let stopFunction = function() {
+            if (this.playing === true) {
+                this.pause();
+            }
+            this.beatNumber = 0;
+        };
+        window.setTimeout(stopFunction, secondsFromNow * 1000);
+    }
 };
 
 let EqualTemperament = {
@@ -124,3 +133,5 @@ Sequencer.init(MajorPentatonicScale);
 Sequencer.play(0.1);
 Sequencer.pause(5);
 window.setTimeout(function() {Sequencer.play(1);}, 5500);
+window.setTimeout(function() {Sequencer.stop();}, 8000);
+window.setTimeout(function() {Sequencer.play(1);}, 8500);
