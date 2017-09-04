@@ -77,7 +77,15 @@ let Sequencer = {
         this.nextNoteTime = secondsFromNow;
         this.intervalID = window.setInterval(this.scheduleNotes.bind(this), this.scheduleIntervalMs);
         this.playing = true;
-    }
+    },
+    pause: function(secondsFromNow) {
+        if (this.playing === false) {
+            return;
+        }
+        let pauseFunction = function() {window.clearInterval(this.intervalID);}.bind(this);
+        window.setTimeout(pauseFunction, secondsFromNow * 1000);
+        this.playing = false;
+    },
 };
 
 let EqualTemperament = {
@@ -114,3 +122,4 @@ let MajorPentatonicScale = OctaveScale.createScale({scaleNotes: [0, 2, 4, 7, 9],
 Sequencer.init(MajorPentatonicScale);
 
 Sequencer.play(0.1);
+Sequencer.pause(5);
