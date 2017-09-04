@@ -78,7 +78,7 @@ let Sequencer = {
         this.intervalID = window.setInterval(this.scheduleNotes.bind(this), this.scheduleIntervalMs);
         this.playing = true;
     },
-    pause: function(secondsFromNow) {
+    pause: function(secondsFromNow = 0) {
         if (this.playing === false) {
             return;
         }
