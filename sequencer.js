@@ -6,10 +6,11 @@ let Sequencer = {
        this.scale = scale;
     },
     audioContext: new AudioContext(),
+    playing: false,
     lookahead: 0.1,
     scheduleIntervalMs: 25,
     tempo: 144,
-    nextNoteTime: 0.5,
+    nextNoteTime: 0,
     beatNumber: 0,
     notes: [
         [
@@ -52,7 +53,6 @@ let Sequencer = {
                 let oscillator = this.audioContext.createOscillator();
                 oscillator.type = 'sine';
                 oscillator.frequency.value = this.scale.frequencyOf(thisNote.note);
-                console.log('Note frequency: ' + this.scale.frequencyOf(thisNote.note));
 
                 oscillator.connect(this.output);
                 oscillator.start(this.nextNoteTime);
@@ -70,6 +70,31 @@ let Sequencer = {
         let secondsPerQuaver = 60 / this.tempo / 2;
         return beats * secondsPerQuaver;
     },
+    play: function(secondsFromNow = 0) {
+        if (this.playing !== false) {
+            return;
+        }
+        this.nextNoteTime += secondsFromNow;
+        this.intervalID = window.setInterval(this.scheduleNotes.bind(this), this.scheduleIntervalMs);
+        this.playing = true;
+    },
+    pause: function(secondsFromNow = 0) {
+        if (this.playing === false) {
+            return;
+        }
+        let pauseFunction = function() {window.clearInterval(this.intervalID);}.bind(this);
+        window.setTimeout(pauseFunction, secondsFromNow * 1000);
+        this.playing = false;
+    },
+    stop: function(secondsFromNow = 0) {
+        let stopFunction = function() {
+            if (this.playing === true) {
+                this.pause();
+            }
+            this.beatNumber = 0;
+        };
+        window.setTimeout(stopFunction, secondsFromNow * 1000);
+    }
 };
 
 let EqualTemperament = {
@@ -101,10 +126,12 @@ let OctaveScale = {
     }
 };
 
-let MajorPentatonicScale = OctaveScale.createScale({scaleNotes: [0, 2, 4, 7, 9], octave: -2});
+let MajorPentatonicScale = OctaveScale.createScale({scaleNotes: [0, 2, 4, 7, 9], octave: 0});
 
 Sequencer.init(MajorPentatonicScale);
 
-let boundSchedule = Sequencer.scheduleNotes.bind(Sequencer);
-
-window.setInterval(boundSchedule, Sequencer.scheduleIntervalMs);
+Sequencer.play(0.1);
+Sequencer.pause(5);
+window.setTimeout(function() {Sequencer.play(1);}, 5500);
+window.setTimeout(function() {Sequencer.stop();}, 8000);
+window.setTimeout(function() {Sequencer.play(1);}, 8500);
