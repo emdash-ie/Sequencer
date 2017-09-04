@@ -10,7 +10,7 @@ let Sequencer = {
     lookahead: 0.1,
     scheduleIntervalMs: 25,
     tempo: 144,
-    nextNoteTime: 0.5,
+    nextNoteTime: 0,
     beatNumber: 0,
     notes: [
         [
@@ -74,7 +74,7 @@ let Sequencer = {
         if (this.playing !== false) {
             return;
         }
-        this.nextNoteTime = secondsFromNow;
+        this.nextNoteTime += secondsFromNow;
         this.intervalID = window.setInterval(this.scheduleNotes.bind(this), this.scheduleIntervalMs);
         this.playing = true;
     },
@@ -123,3 +123,4 @@ Sequencer.init(MajorPentatonicScale);
 
 Sequencer.play(0.1);
 Sequencer.pause(5);
+window.setTimeout(function() {Sequencer.play(1);}, 5500);
