@@ -126,6 +126,26 @@ let OctaveScale = {
     }
 };
 
+let BeatGrid = {
+    beatsPerMinute: 144,
+    zeroTime: 0,
+    timeFor: function(beatNumber) {
+        let secondsSinceZeroBeat = 60 * beatNumber / this.beatsPerMinute;
+        return this.zeroTime + secondsSinceZeroBeat;
+    },
+    beatFor: function(time) {
+        let secondsSinceZeroBeat = time - this.zeroTime;
+        return secondsSinceZeroBeat * this.beatsPerMinute / 60;
+    },
+    changeTempo: function(newTempo) {
+        let currentTime = this.audioContext.currentTime;
+        let currentBeat = this.beatFor(currentTime);
+
+        this.zeroTime = currentTime - (60 * currentBeat / newTempo);
+        this.beatsPerMinute = newTempo;
+    }
+};
+
 let MajorPentatonicScale = OctaveScale.createScale({scaleNotes: [0, 2, 4, 7, 9], octave: 0});
 
 Sequencer.init(MajorPentatonicScale);
