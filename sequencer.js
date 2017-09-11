@@ -4,13 +4,19 @@ let Sequencer = {
        this.output.gain.value = 0.25;
        this.output.connect(this.audioContext.destination);
        this.scale = scale;
+       this.beatGrid = Object.create(BeatGrid);
     },
     audioContext: new AudioContext(),
+    beatGrid: null,
     playing: false,
     lookahead: 0.1,
     scheduleIntervalMs: 25,
-    tempo: 144,
-    nextNoteTime: 0,
+    get tempo() {
+        return this.beatGrid.beatsPerMinute;
+    },
+    get nextNoteTime() {
+        return this.beatGrid.timeFor(this.beatNumber);
+    },
     beatNumber: 0,
     notes: [
         [
@@ -62,8 +68,6 @@ let Sequencer = {
         }
     },
     nextNote: function() {
-        let secondsPerBeat = 60 / this.tempo;
-        this.nextNoteTime += secondsPerBeat / 2;
         this.beatNumber = (this.beatNumber + 1) % 8;
     },
     noteLength: function(beats) {
@@ -74,9 +78,11 @@ let Sequencer = {
         if (this.playing !== false) {
             return;
         }
-        this.nextNoteTime += secondsFromNow;
-        this.intervalID = window.setInterval(this.scheduleNotes.bind(this), this.scheduleIntervalMs);
-        this.playing = true;
+        let playFunction = function() {
+            this.intervalID = window.setInterval(this.scheduleNotes.bind(this), this.scheduleIntervalMs);
+            this.playing = true;
+        };
+        window.setTimeout(playFunction.bind(this), secondsFromNow * 1000);
     },
     pause: function(secondsFromNow = 0) {
         if (this.playing === false) {
