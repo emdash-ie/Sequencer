@@ -88,9 +88,11 @@ let Sequencer = {
         if (this.playing === false) {
             return;
         }
-        let pauseFunction = function() {window.clearInterval(this.intervalID);}.bind(this);
-        window.setTimeout(pauseFunction, secondsFromNow * 1000);
-        this.playing = false;
+        let pauseFunction = function() {
+            window.clearInterval(this.intervalID);
+            this.playing = false;
+        };
+        window.setTimeout(pauseFunction.bind(this), secondsFromNow * 1000);
     },
     stop: function(secondsFromNow = 0) {
         let stopFunction = function() {
@@ -99,7 +101,7 @@ let Sequencer = {
             }
             this.beatNumber = 0;
         };
-        window.setTimeout(stopFunction, secondsFromNow * 1000);
+        window.setTimeout(stopFunction.bind(this), secondsFromNow * 1000);
     }
 };
 
