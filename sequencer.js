@@ -158,8 +158,4 @@ let MajorPentatonicScale = OctaveScale.createScale({scaleNotes: [0, 2, 4, 7, 9],
 
 Sequencer.init(MajorPentatonicScale);
 
-Sequencer.play(0.1);
-Sequencer.pause(5);
-window.setTimeout(function() {Sequencer.play(1);}, 5500);
-window.setTimeout(function() {Sequencer.stop();}, 8000);
-window.setTimeout(function() {Sequencer.play(1);}, 8500);
+Sequencer.play();
