@@ -1,21 +1,25 @@
 let Sequencer = {
-    init: function(scale) {
+    init: function(scale, initialBpm) {
        this.output = this.audioContext.createGain();
        this.output.gain.value = 0.25;
        this.output.connect(this.audioContext.destination);
        this.scale = scale;
-       this.beatGrid = Object.create(BeatGrid);
+       this.timeline = Object.create(BeatTimeline);
+       this.timeline.init({
+           audioContext: this.audioContext,
+           beatsPerMinute: initialBpm,
+       })
     },
     audioContext: new AudioContext(),
-    beatGrid: null,
+    timeline: null,
     playing: false,
     lookahead: 0.1,
     scheduleIntervalMs: 25,
     get tempo() {
-        return this.beatGrid.beatsPerMinute;
+        return this.timeline.beatsPerMinute;
     },
     get nextNoteTime() {
-        return this.beatGrid.timeFor(this.beatNumber);
+        return this.timeline.timeFor(this.beatNumber);
     },
     beatNumber: 0,
     notes: [
@@ -68,7 +72,11 @@ let Sequencer = {
         }
     },
     nextNote: function() {
-        this.beatNumber = (this.beatNumber + 1) % 8;
+        this.beatNumber++;
+        if (this.beatNumber >= 8) {
+            this.beatNumber %= 8;
+            this.timeline = this.timeline.restartingCopy();
+        }
     },
     noteLength: function(beats) {
         let secondsPerQuaver = 60 / this.tempo / 2;
@@ -134,28 +142,38 @@ let OctaveScale = {
     }
 };
 
-let BeatGrid = {
-    beatsPerMinute: 144,
-    zeroTime: 1,
+let BeatTimeline = {
+    init: function({audioContext, beatsPerMinute, startingBeat = 0}) {
+        let startTime = audioContext.currentTime;
+
+        this.audioContext = audioContext;
+        this.beatsPerMinute = beatsPerMinute;
+
+        let secondsSinceBeatZero = startingBeat * 60 / this.beatsPerMinute;
+        this.zeroTime = startTime - secondsSinceBeatZero;
+    },
     timeFor: function(beatNumber) {
-        let secondsSinceZeroBeat = 60 * beatNumber / this.beatsPerMinute;
-        return this.zeroTime + secondsSinceZeroBeat;
+        let secondsSinceBeatZero = 60 * beatNumber / this.beatsPerMinute;
+        return this.zeroTime + secondsSinceBeatZero;
     },
     beatFor: function(time) {
-        let secondsSinceZeroBeat = time - this.zeroTime;
-        return secondsSinceZeroBeat * this.beatsPerMinute / 60;
+        let secondsSinceBeatZero = time - this.zeroTime;
+        return secondsSinceBeatZero * this.beatsPerMinute / 60;
     },
-    changeTempo: function(newTempo) {
-        let currentTime = this.audioContext.currentTime;
-        let currentBeat = this.beatFor(currentTime);
-
-        this.zeroTime = currentTime - (60 * currentBeat / newTempo);
-        this.beatsPerMinute = newTempo;
+    /**
+     * Creates a copy of this timeline that starts now.
+     *
+     * @returns {Object} A copy of this timeline which starts now.
+     */
+    restartingCopy: function() {
+        let newTimeline = Object.create(this);
+        newTimeline.init(this);
+        return newTimeline;
     }
 };
 
 let MajorPentatonicScale = OctaveScale.createScale({scaleNotes: [0, 2, 4, 7, 9], octave: 0});
 
-Sequencer.init(MajorPentatonicScale);
+Sequencer.init(MajorPentatonicScale, 144);
 
 Sequencer.play();
