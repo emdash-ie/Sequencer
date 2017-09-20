@@ -136,7 +136,7 @@ let OctaveScale = {
 
 let BeatGrid = {
     beatsPerMinute: 144,
-    zeroTime: 0,
+    zeroTime: 1,
     timeFor: function(beatNumber) {
         let secondsSinceZeroBeat = 60 * beatNumber / this.beatsPerMinute;
         return this.zeroTime + secondsSinceZeroBeat;
