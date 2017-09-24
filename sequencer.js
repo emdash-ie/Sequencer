@@ -1,16 +1,26 @@
 let Sequencer = {
-    init: function(scale) {
+    init: function(scale, initialBpm) {
        this.output = this.audioContext.createGain();
        this.output.gain.value = 0.25;
        this.output.connect(this.audioContext.destination);
        this.scale = scale;
+       this.timeline = Object.create(BeatTimeline);
+       this.timeline.init({
+           audioContext: this.audioContext,
+           beatsPerMinute: initialBpm,
+       })
     },
     audioContext: new AudioContext(),
+    timeline: null,
     playing: false,
     lookahead: 0.1,
     scheduleIntervalMs: 25,
-    tempo: 144,
-    nextNoteTime: 0,
+    get tempo() {
+        return this.timeline.beatsPerMinute;
+    },
+    get nextNoteTime() {
+        return this.timeline.timeFor(this.beatNumber);
+    },
     beatNumber: 0,
     notes: [
         [
@@ -62,9 +72,11 @@ let Sequencer = {
         }
     },
     nextNote: function() {
-        let secondsPerBeat = 60 / this.tempo;
-        this.nextNoteTime += secondsPerBeat / 2;
-        this.beatNumber = (this.beatNumber + 1) % 8;
+        this.beatNumber++;
+        if (this.beatNumber >= 8) {
+            this.beatNumber %= 8;
+            this.timeline = this.timeline.copyTimeShifted({beatDelay: 8});
+        }
     },
     noteLength: function(beats) {
         let secondsPerQuaver = 60 / this.tempo / 2;
@@ -74,17 +86,21 @@ let Sequencer = {
         if (this.playing !== false) {
             return;
         }
-        this.nextNoteTime += secondsFromNow;
-        this.intervalID = window.setInterval(this.scheduleNotes.bind(this), this.scheduleIntervalMs);
-        this.playing = true;
+        let playFunction = function() {
+            this.intervalID = window.setInterval(this.scheduleNotes.bind(this), this.scheduleIntervalMs);
+            this.playing = true;
+        };
+        window.setTimeout(playFunction.bind(this), secondsFromNow * 1000);
     },
     pause: function(secondsFromNow = 0) {
         if (this.playing === false) {
             return;
         }
-        let pauseFunction = function() {window.clearInterval(this.intervalID);}.bind(this);
-        window.setTimeout(pauseFunction, secondsFromNow * 1000);
-        this.playing = false;
+        let pauseFunction = function() {
+            window.clearInterval(this.intervalID);
+            this.playing = false;
+        };
+        window.setTimeout(pauseFunction.bind(this), secondsFromNow * 1000);
     },
     stop: function(secondsFromNow = 0) {
         let stopFunction = function() {
@@ -93,7 +109,7 @@ let Sequencer = {
             }
             this.beatNumber = 0;
         };
-        window.setTimeout(stopFunction, secondsFromNow * 1000);
+        window.setTimeout(stopFunction.bind(this), secondsFromNow * 1000);
     }
 };
 
@@ -126,12 +142,47 @@ let OctaveScale = {
     }
 };
 
+let BeatTimeline = {
+    init: function({beatsPerMinute, referenceBeat = 0, referenceTime = 0}) {
+        this.beatsPerMinute = beatsPerMinute;
+        this.referenceBeat = referenceBeat;
+        this.referenceTime = referenceTime;
+    },
+    timeFor: function(beatNumber) {
+        let beatsSinceReference = beatNumber - this.referenceBeat;
+        let secondsSinceReference = beatsSinceReference * 60 / this.beatsPerMinute;
+        return this.referenceTime + secondsSinceReference;
+    },
+    beatFor: function(time) {
+        let secondsSinceReference = time - this.referenceTime;
+        let beatsSinceReference = secondsSinceReference * this.beatsPerMinute / 60;
+        return this.referenceBeat + beatsSinceReference;
+    },
+    /**
+     * Creates a copy of this timeline which has been shifted in time.
+     *
+     * Positive values for the parameters shift the copy later in time,
+     * negative values shift it earlier.
+     *
+     * @param {number} [beatDelay=0] A number of beats (in this timeline’s
+     *        scale) by which to delay this timeline.
+     * @param {number} [timeDelay=0] A time by which to delay this timeline,
+     *        in the base of {@link AudioContext.currentTime()}.
+     * @returns {Object} A copy of this timeline which has been shifted in time.
+     */
+    copyTimeShifted: function({beatDelay = 0, timeDelay = 0}) {
+        let newTimeline = Object.create(Object.getPrototypeOf(this));
+        newTimeline.init({
+            beatsPerMinute: this.beatsPerMinute,
+            referenceBeat: this.referenceBeat,
+            referenceTime: this.timeFor(this.referenceBeat + beatDelay) + timeDelay,
+        });
+        return newTimeline;
+    }
+};
+
 let MajorPentatonicScale = OctaveScale.createScale({scaleNotes: [0, 2, 4, 7, 9], octave: 0});
 
-Sequencer.init(MajorPentatonicScale);
+Sequencer.init(MajorPentatonicScale, 144);
 
-Sequencer.play(0.1);
-Sequencer.pause(5);
-window.setTimeout(function() {Sequencer.play(1);}, 5500);
-window.setTimeout(function() {Sequencer.stop();}, 8000);
-window.setTimeout(function() {Sequencer.play(1);}, 8500);
+Sequencer.play();
