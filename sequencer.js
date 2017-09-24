@@ -75,7 +75,7 @@ let Sequencer = {
         this.beatNumber++;
         if (this.beatNumber >= 8) {
             this.beatNumber %= 8;
-            this.timeline = this.timeline.restartingCopy();
+            this.timeline = this.timeline.copyTimeShifted({beatDelay: 8});
         }
     },
     noteLength: function(beats) {
@@ -143,31 +143,40 @@ let OctaveScale = {
 };
 
 let BeatTimeline = {
-    init: function({audioContext, beatsPerMinute, startingBeat = 0}) {
-        let startTime = audioContext.currentTime;
-
-        this.audioContext = audioContext;
+    init: function({beatsPerMinute, referenceBeat = 0, referenceTime = 0}) {
         this.beatsPerMinute = beatsPerMinute;
-
-        let secondsSinceBeatZero = startingBeat * 60 / this.beatsPerMinute;
-        this.zeroTime = startTime - secondsSinceBeatZero;
+        this.referenceBeat = referenceBeat;
+        this.referenceTime = referenceTime;
     },
     timeFor: function(beatNumber) {
-        let secondsSinceBeatZero = 60 * beatNumber / this.beatsPerMinute;
-        return this.zeroTime + secondsSinceBeatZero;
+        let beatsSinceReference = beatNumber - this.referenceBeat;
+        let secondsSinceReference = beatsSinceReference * 60 / this.beatsPerMinute;
+        return this.referenceTime + secondsSinceReference;
     },
     beatFor: function(time) {
-        let secondsSinceBeatZero = time - this.zeroTime;
-        return secondsSinceBeatZero * this.beatsPerMinute / 60;
+        let secondsSinceReference = time - this.referenceTime;
+        let beatsSinceReference = secondsSinceReference * this.beatsPerMinute / 60;
+        return this.referenceBeat + beatsSinceReference;
     },
     /**
-     * Creates a copy of this timeline that starts now.
+     * Creates a copy of this timeline which has been shifted in time.
      *
-     * @returns {Object} A copy of this timeline which starts now.
+     * Positive values for the parameters shift the copy later in time,
+     * negative values shift it earlier.
+     *
+     * @param {number} [beatDelay=0] A number of beats (in this timeline’s
+     *        scale) by which to delay this timeline.
+     * @param {number} [timeDelay=0] A time by which to delay this timeline,
+     *        in the base of {@link AudioContext.currentTime()}.
+     * @returns {Object} A copy of this timeline which has been shifted in time.
      */
-    restartingCopy: function() {
+    copyTimeShifted: function({beatDelay = 0, timeDelay = 0}) {
         let newTimeline = Object.create(this);
-        newTimeline.init(this);
+        newTimeline.init({
+            beatsPerMinute: this.beatsPerMinute,
+            referenceBeat: this.referenceBeat,
+            referenceTime: this.timeFor(this.referenceBeat + beatDelay) + timeDelay,
+        });
         return newTimeline;
     }
 };
