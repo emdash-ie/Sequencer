@@ -171,7 +171,7 @@ let BeatTimeline = {
      * @returns {Object} A copy of this timeline which has been shifted in time.
      */
     copyTimeShifted: function({beatDelay = 0, timeDelay = 0}) {
-        let newTimeline = Object.create(this);
+        let newTimeline = Object.create(Object.getPrototypeOf(this));
         newTimeline.init({
             beatsPerMinute: this.beatsPerMinute,
             referenceBeat: this.referenceBeat,
