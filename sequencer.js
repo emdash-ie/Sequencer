@@ -1,4 +1,14 @@
+/**
+ * Plays through a sequence of notes.
+ */
 let Sequencer = {
+    /**
+     * Initialises the sequencer and creates an audio context for it.
+     *
+     * @param scale A scale object that maps note numbers to frequencies.
+     * @param initialBpm The initial tempo the sequencer should use, in beats
+     *        per minute.
+     */
     init: function(scale, initialBpm) {
        this.output = this.audioContext.createGain();
        this.output.gain.value = 0.25;
@@ -15,13 +25,25 @@ let Sequencer = {
     playing: false,
     lookahead: 0.1,
     scheduleIntervalMs: 25,
+    /**
+     * The current tempo the sequencer is set to, in beats per minute.
+     */
     get tempo() {
         return this.timeline.beatsPerMinute;
     },
+    /**
+     * The time that the next note will be scheduled to play.
+     */
     get nextNoteTime() {
         return this.timeline.timeFor(this.beatNumber);
     },
+    /**
+     * The current beat.
+     */
     beatNumber: 0,
+    /**
+     * The sequence of notes the sequencer plays.
+     */
     notes: [
         [
             {
@@ -57,6 +79,9 @@ let Sequencer = {
             },
         ],
     ],
+    /**
+     * Periodically schedules upcoming notes for playback.
+     */
     scheduleNotes: function() {
         while (this.nextNoteTime < this.audioContext.currentTime + this.lookahead) {
             for (let thisNote of this.notes[this.beatNumber]) {
@@ -71,6 +96,9 @@ let Sequencer = {
             this.nextNote();
         }
     },
+    /**
+     * Moves on to the next note in the sequence.
+     */
     nextNote: function() {
         this.beatNumber++;
         if (this.beatNumber >= 8) {
@@ -78,10 +106,23 @@ let Sequencer = {
             this.timeline = this.timeline.copyTimeShifted({beatDelay: 8});
         }
     },
+    /**
+     * Calculates the length in time of a number of beats.
+     *
+     * This functionality will shortly be moved to the timeline object.
+     *
+     * @param beats A length in beats to convert to seconds.
+     */
     noteLength: function(beats) {
         let secondsPerQuaver = 60 / this.tempo / 2;
         return beats * secondsPerQuaver;
     },
+    /**
+     * Starts playback.
+     *
+     * @param secondsFromNow A number of seconds into the future to schedule the
+     *        starting of playback.
+     */
     play: function(secondsFromNow = 0) {
         if (this.playing !== false) {
             return;
@@ -92,6 +133,12 @@ let Sequencer = {
         };
         window.setTimeout(playFunction.bind(this), secondsFromNow * 1000);
     },
+    /**
+     * Pauses playback.
+     *
+     * @param secondsFromNow A number of seconds into the future to schedule the
+     *        pausing of playback.
+     */
     pause: function(secondsFromNow = 0) {
         if (this.playing === false) {
             return;
@@ -102,6 +149,12 @@ let Sequencer = {
         };
         window.setTimeout(pauseFunction.bind(this), secondsFromNow * 1000);
     },
+    /**
+     * Stops playback.
+     *
+     * @param secondsFromNow A number of seconds into the future to schedule the
+     *        stopping of playback.
+     */
     stop: function(secondsFromNow = 0) {
         let stopFunction = function() {
             if (this.playing === true) {
