@@ -166,13 +166,31 @@ let Sequencer = {
     }
 };
 
+/**
+ * Maps note numbers to frequencies using 440 Hz as the frequency for A4.
+ *
+ * A4 is assigned the note number 0, and each note number represents a
+ * distance in semitones from this number (positive numbers correspond to
+ * notes higher than A4, and negative numbers to notes lower than A4).
+ *
+ * For example, A3 is note number -12 and B4 is note number 2.
+ */
 let EqualTemperament = {
     referenceFreq: 440,
+    /**
+     * Calculates the frequency for a specific note number.
+     *
+     * @param noteNumber The number to give the frequency for.
+     */
     frequencyOf: function(noteNumber) {
         return this.referenceFreq * Math.pow(2, noteNumber / 12);
     }
 };
 
+/**
+ * Converts note numbers within an octave scale to frequencies, according to 
+ * a tuning system.
+ */
 let OctaveScale = {
     frequencyOf: function(noteNumber) {
         let divide = Math.trunc(noteNumber / this.notes.length);
