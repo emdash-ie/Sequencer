@@ -16,8 +16,8 @@ let Sequencer = {
        this.scale = scale;
        this.timeline = Object.create(BeatTimeline);
        this.timeline.init({
-           audioContext: this.audioContext,
            beatsPerMinute: initialBpm,
+           referenceTime: this.audioContext.currentTime,
        })
     },
     audioContext: new AudioContext(),
