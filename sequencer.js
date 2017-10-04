@@ -256,4 +256,10 @@ let MajorPentatonicScale = OctaveScale.createScale({scaleNotes: [0, 2, 4, 7, 9],
 
 Sequencer.init(MajorPentatonicScale, 144);
 
-Sequencer.play();
+let playButton = document.querySelector('#play');
+let pauseButton = document.querySelector('#pause');
+let stopButton = document.querySelector('#stop');
+
+playButton.addEventListener('click', function() {Sequencer.play();}, false);
+pauseButton.addEventListener('click', function() {Sequencer.pause();}, false);
+stopButton.addEventListener('click', function() {Sequencer.stop();}, false);
