@@ -132,6 +132,11 @@ let Sequencer = {
             this.playing = true;
         };
         window.setTimeout(playFunction.bind(this), secondsFromNow * 1000);
+
+        this.timeline = this.timeline.copyStartingAt({
+            referenceTime: this.audioContext.currentTime(),
+            referenceBeat: this.beatNumber,
+        });
     },
     /**
      * Pauses playback.
@@ -249,7 +254,18 @@ let BeatTimeline = {
             referenceTime: this.timeFor(this.referenceBeat + beatDelay) + timeDelay,
         });
         return newTimeline;
-    }
+    },
+    /**
+     * Creates a copy of this timeline with a new reference.
+     */
+    copyStartingAt: function({referenceTime, referenceBeat = 0}) {
+        let newTimeline = Object.create(Object.getPrototypeOf(this));
+        newTimeline.init({
+            beatsPerMinute: this.beatPerMinute,
+            referenceBeat: referenceBeat,
+            referenceTime: referenceTime,
+        });
+    },
 };
 
 let MajorPentatonicScale = OctaveScale.createScale({scaleNotes: [0, 2, 4, 7, 9], octave: 0});
