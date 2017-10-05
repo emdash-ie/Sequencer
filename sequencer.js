@@ -134,8 +134,8 @@ let Sequencer = {
         window.setTimeout(playFunction.bind(this), secondsFromNow * 1000);
 
         this.timeline = this.timeline.copyStartingAt({
-            referenceTime: this.audioContext.currentTime(),
             referenceBeat: this.beatNumber,
+            referenceTime: this.audioContext.currentTime,
         });
     },
     /**
@@ -261,7 +261,7 @@ let BeatTimeline = {
     copyStartingAt: function({referenceTime, referenceBeat = 0}) {
         let newTimeline = Object.create(Object.getPrototypeOf(this));
         newTimeline.init({
-            beatsPerMinute: this.beatPerMinute,
+            beatsPerMinute: this.beatsPerMinute,
             referenceBeat: referenceBeat,
             referenceTime: referenceTime,
         });
