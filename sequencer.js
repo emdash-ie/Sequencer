@@ -134,8 +134,8 @@ let Sequencer = {
         window.setTimeout(playFunction.bind(this), secondsFromNow * 1000);
 
         this.timeline = this.timeline.copyStartingAt({
-            referenceBeat: this.beatNumber,
             referenceTime: this.audioContext.currentTime,
+            referenceBeat: this.resumeBeat,
         });
     },
     /**
@@ -153,6 +153,7 @@ let Sequencer = {
             this.playing = false;
         };
         window.setTimeout(pauseFunction.bind(this), secondsFromNow * 1000);
+        this.resumeBeat = this.timeline.beatFor(this.audioContext.currentTime);
     },
     /**
      * Stops playback.
@@ -165,7 +166,7 @@ let Sequencer = {
             if (this.playing === true) {
                 this.pause();
             }
-            this.beatNumber = 0;
+            this.resumeBeat = 0;
         };
         window.setTimeout(stopFunction.bind(this), secondsFromNow * 1000);
     }
