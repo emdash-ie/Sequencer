@@ -265,6 +265,7 @@ let BeatTimeline = {
             referenceBeat: referenceBeat,
             referenceTime: referenceTime,
         });
+        return newTimeline;
     },
 };
 
