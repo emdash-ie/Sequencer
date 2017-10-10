@@ -169,6 +169,17 @@ let Sequencer = {
             this.resumeBeat = 0;
         };
         window.setTimeout(stopFunction.bind(this), secondsFromNow * 1000);
+    },
+    /**
+     * Changes the tempo at which the current sequence is being played.
+     *
+     * The tempo change will be applied from the next beat.
+     *
+     * @param newTempo {number} The new tempo to play the sequence at, in
+     *    beats per minute.
+     */
+    changeTempo: function(newTempo) {
+        this.timeline = this.timeline.withTempo(newTempo, this.beatNumber);
     }
 };
 
@@ -194,7 +205,7 @@ let EqualTemperament = {
 };
 
 /**
- * Converts note numbers within an octave scale to frequencies, according to 
+ * Converts note numbers within an octave scale to frequencies, according to
  * a tuning system.
  */
 let OctaveScale = {
@@ -268,6 +279,24 @@ let BeatTimeline = {
         });
         return newTimeline;
     },
+    /**
+     * Creates a copy of this timeline with a new tempo.
+     *
+     * @param {number} newTempo The tempo the copy should use, in beats per
+     *     minute.
+     * @param {number} fromBeat The beat from which the tempo change should
+     *    be applied.
+     * @return A copy of this timeline, with the new tempo.
+     */
+    withTempo: function(newTempo, fromBeat) {
+        let newTimeline = Object.create(Object.getPrototypeOf(this));
+        newTimeline.init({
+            beatsPerMinute: newTempo,
+            referenceBeat: fromBeat,
+            referenceTime: this.timeFor(fromBeat),
+        });
+        return newTimeline;
+    }
 };
 
 let MajorPentatonicScale = OctaveScale.createScale({scaleNotes: [0, 2, 4, 7, 9], octave: 0});
@@ -277,7 +306,10 @@ Sequencer.init(MajorPentatonicScale, 144);
 let playButton = document.querySelector('#play');
 let pauseButton = document.querySelector('#pause');
 let stopButton = document.querySelector('#stop');
+let tempoControl = document.querySelector('#tempoControl');
 
 playButton.addEventListener('click', function() {Sequencer.play();}, false);
 pauseButton.addEventListener('click', function() {Sequencer.pause();}, false);
 stopButton.addEventListener('click', function() {Sequencer.stop();}, false);
+tempoControl.addEventListener('input', function(e) {Sequencer.changeTempo(e.target.value)}, false);
+tempoControl.value = Sequencer.tempo;
