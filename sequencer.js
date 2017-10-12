@@ -299,17 +299,26 @@ let BeatTimeline = {
     }
 };
 
-let MajorPentatonicScale = OctaveScale.createScale({scaleNotes: [0, 2, 4, 7, 9], octave: 0});
-
-Sequencer.init(MajorPentatonicScale, 144);
-
-let playButton = document.querySelector('#play');
-let pauseButton = document.querySelector('#pause');
-let stopButton = document.querySelector('#stop');
-let tempoControl = document.querySelector('#tempoControl');
-
-playButton.addEventListener('click', function() {Sequencer.play();}, false);
-pauseButton.addEventListener('click', function() {Sequencer.pause();}, false);
-stopButton.addEventListener('click', function() {Sequencer.stop();}, false);
-tempoControl.addEventListener('input', function(e) {Sequencer.changeTempo(e.target.value)}, false);
-tempoControl.value = Sequencer.tempo;
+export default {
+    /**
+     * Creates a new sequencer, an object which plays a sequence of notes.
+     *
+     * @param scale The scale to use to map note numbers to frequencies.
+     * @param tempo The initial tempo to set the sequencer to, in beats per minute.
+     */
+    createSequencer: function({scale, tempo}) {
+        let sequencer = Object.create(Sequencer);
+        sequencer.init(scale, tempo);
+        return sequencer;
+    },
+    /**
+     * Creates a new octave scale, which is a scale whose notes repeat every octave.
+     * 
+     * @param scaleNotes The intervals contained in the scale.
+     * @param tuningSystem A mapping of note numbers to frequencies. Defaults to 12-tone equal temperament.
+     * @param octave An octave offset – a value of 1 shifts all notes up an octave, for example.
+     */
+    createOctaveScale: function({scaleNotes, tuningSystem=EqualTemperament, octave=0}) {
+        return OctaveScale.createScale({scaleNotes: scaleNotes, tuningSystem: tuningSystem, octave: octave});
+    }, 
+}
