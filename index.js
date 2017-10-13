@@ -1,4 +1,4 @@
-import Flero from "./sequencer";
+import Flero from "./sequencer.js";
 let MajorPentatonicScale = Flero.createOctaveScale({scaleNotes: [0, 2, 4, 7, 9], octave: 0});
 
 let sequencer = Flero.createSequencer({scale: MajorPentatonicScale, tempo: 144});
