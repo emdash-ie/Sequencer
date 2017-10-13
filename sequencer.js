@@ -8,8 +8,10 @@ let Sequencer = {
      * @param scale A scale object that maps note numbers to frequencies.
      * @param initialBpm The initial tempo the sequencer should use, in beats
      *        per minute.
+     * @param audioContext {AudioContext} The audio context the sequencer should use.
      */
-    init: function(scale, initialBpm) {
+    init: function(scale, initialBpm, audioContext) {
+       this.audioContext = audioContext;
        this.output = this.audioContext.createGain();
        this.output.gain.value = 0.25;
        this.output.connect(this.audioContext.destination);
@@ -20,7 +22,6 @@ let Sequencer = {
            referenceTime: this.audioContext.currentTime,
        })
     },
-    audioContext: new AudioContext(),
     timeline: null,
     playing: false,
     lookahead: 0.1,
@@ -305,10 +306,11 @@ export default {
      *
      * @param scale The scale to use to map note numbers to frequencies.
      * @param tempo The initial tempo to set the sequencer to, in beats per minute.
+     * @param audioContext {AudioContext} The audio context the sequencer should use.
      */
-    createSequencer: function({scale, tempo}) {
+    createSequencer: function({scale, tempo, audioContext}) {
         let sequencer = Object.create(Sequencer);
-        sequencer.init(scale, tempo);
+        sequencer.init(scale, tempo, audioContext);
         return sequencer;
     },
     /**
