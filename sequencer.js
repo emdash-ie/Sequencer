@@ -168,6 +168,7 @@ let Sequencer = {
                 this.pause();
             }
             this.resumeBeat = 0;
+            this.beatNumber = 0;
         };
         window.setTimeout(stopFunction.bind(this), secondsFromNow * 1000);
     },
