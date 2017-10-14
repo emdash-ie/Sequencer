@@ -132,12 +132,12 @@ let Sequencer = {
             this.intervalID = window.setInterval(this.scheduleNotes.bind(this), this.scheduleIntervalMs);
             this.playing = true;
         };
-        window.setTimeout(playFunction.bind(this), secondsFromNow * 1000);
 
         this.timeline = this.timeline.copyStartingAt({
             referenceTime: this.audioContext.currentTime,
             referenceBeat: this.resumeBeat,
         });
+        window.setTimeout(playFunction.bind(this), secondsFromNow * 1000);
     },
     /**
      * Pauses playback.
