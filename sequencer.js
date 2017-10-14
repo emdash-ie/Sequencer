@@ -210,6 +210,12 @@ let EqualTemperament = {
  * a tuning system.
  */
 let OctaveScale = {
+    /**
+     * Returns the frequency of a given note number.
+     *
+     * @param noteNumber The number to find the frequency of.
+     * @return The frequency of the given note.
+     */
     frequencyOf: function(noteNumber) {
         let divide = Math.trunc(noteNumber / this.notes.length);
         let mod = noteNumber % this.notes.length;
@@ -218,6 +224,14 @@ let OctaveScale = {
 
         return this.tuningSystem.frequencyOf(extendedNoteNumber);
     },
+    /**
+     * Creates a new octave scale.
+     *
+     * @param scaleNotes The notes the scale should contain.
+     * @param tuningSystem The tuning system that should be used to convert note numbers to frequencies.
+     * @param octave An offset to use for the octave of the scale. For example, an offset value of 1 shifts every note up an octave.
+     * @return A new octave scale.
+     */
     createScale: function({
             scaleNotes,
             tuningSystem=EqualTemperament,
@@ -231,17 +245,39 @@ let OctaveScale = {
     }
 };
 
+/**
+ * Links beats to times, defining a playback of a sequence.
+ */
 let BeatTimeline = {
+    /**
+     * Initialises the timeline.
+     *
+     * @param beatsPerMinute The tempo to use for the timeline.
+     * @param referenceBeat The beat to use as the reference.
+     * @param referenceTime The time to use as the reference.
+     */
     init: function({beatsPerMinute, referenceBeat = 0, referenceTime = 0}) {
         this.beatsPerMinute = beatsPerMinute;
         this.referenceBeat = referenceBeat;
         this.referenceTime = referenceTime;
     },
+    /**
+     * Returns the time for a specific beat number, in the timebase of AudioContext.currentTime().
+     *
+     * @param beatNumber The beat to find the time for.
+     * @return The time for the beat.
+     */
     timeFor: function(beatNumber) {
         let beatsSinceReference = beatNumber - this.referenceBeat;
         let secondsSinceReference = beatsSinceReference * 60 / this.beatsPerMinute;
         return this.referenceTime + secondsSinceReference;
     },
+    /**
+     * Returns the beat value for a given time value.
+     *
+     * @param time The time value to find the beat value for.
+     * @return The beat value for the given time value.
+     */
     beatFor: function(time) {
         let secondsSinceReference = time - this.referenceTime;
         let beatsSinceReference = secondsSinceReference * this.beatsPerMinute / 60;
@@ -270,6 +306,10 @@ let BeatTimeline = {
     },
     /**
      * Creates a copy of this timeline with a new reference.
+     *
+     * @param referenceTime The time value to use for the new timeline’s reference.
+     * @param referenceBeat The beat value to use for the new timeline’s reference. Defaults to 0.
+     * @return A copy of this timeline, using the specified reference.
      */
     copyStartingAt: function({referenceTime, referenceBeat = 0}) {
         let newTimeline = Object.create(Object.getPrototypeOf(this));
