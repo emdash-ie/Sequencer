@@ -186,6 +186,46 @@ let Sequencer = {
 };
 
 /**
+ * Creates a new note.
+ *
+ * @param start The beat the note should start at.
+ * @param length The length of the note, in beats.
+ * @param number The note number of the note.
+ */
+function createNote({start=0, length=1, number=0}) {
+    return {start: start, length: length, number: number};
+}
+
+
+/**
+ * A basic representation of a sequence of notes, that uses a linear search to find and add notes.
+ */
+let BasicNoteSequence = {
+    init: function() {
+        this.notes = [];
+    },
+    addNote: function({start=0, length=1, number=0}) {
+        let position = this.findPosition(start);
+        this.notes.splice(position, 0, createNote({start: start, length: length, number: number}));
+    },
+    findPosition: function(startBeat) {
+        let index = this.notes.length - 1;
+        for (let entry of this.notes.entries()) {
+            if (entry[1].start >= startBeat) {
+                index = entry[0];
+                break;
+            }
+        }
+        return index;
+    },
+    getNotes: function({startBeat, endBeat}) {
+        let startPosition = findPosition(startBeat);
+        let endPosition = findPosition(endBeat);
+        return this.notes.slice(startPosition, endPosition);
+    },
+}
+
+/**
  * Maps note numbers to frequencies using 440 Hz as the frequency for A4.
  *
  * A4 is assigned the note number 0, and each note number represents a
@@ -356,12 +396,12 @@ export default {
     },
     /**
      * Creates a new octave scale, which is a scale whose notes repeat every octave.
-     * 
+     *
      * @param scaleNotes The intervals contained in the scale.
      * @param tuningSystem A mapping of note numbers to frequencies. Defaults to 12-tone equal temperament.
      * @param octave An octave offset – a value of 1 shifts all notes up an octave, for example.
      */
     createOctaveScale: function({scaleNotes, tuningSystem=EqualTemperament, octave=0}) {
         return OctaveScale.createScale({scaleNotes: scaleNotes, tuningSystem: tuningSystem, octave: octave});
-    }, 
+    },
 }
