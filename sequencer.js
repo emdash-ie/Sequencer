@@ -204,20 +204,42 @@ let BasicNoteSequence = {
     init: function() {
         this.notes = [];
     },
+    /**
+     * Adds a new note to the sequence.
+     *
+     * @param start The starting beat of the note.
+     * @param length The length of the note in beats.
+     * @param number The note number of the note.
+     */
     addNote: function({start=0, length=1, number=0}) {
         let position = this.findPosition(start);
         this.notes.splice(position, 0, createNote({start: start, length: length, number: number}));
     },
-    findPosition: function(startBeat) {
+    /**
+     * Finds the position in the note list associated with a certain beat.
+     *
+     * @param beat The beat to find the position for.
+     * @return The index associated with that beat.
+     */
+    findPosition: function(beat) {
         let index = this.notes.length - 1;
         for (let entry of this.notes.entries()) {
-            if (entry[1].start >= startBeat) {
+            if (entry[1].start >= beat) {
                 index = entry[0];
                 break;
             }
         }
         return index;
     },
+    /**
+     * Gets the notes happening between two beats.
+     *
+     * The startpoint of the range is included, but the endpoint isn’t.
+     *
+     * @param startBeat The start of the beat range.
+     * @param endBeat The end of the beat range.
+     * @return An array of all notes in the range.
+     */
     getNotes: function({startBeat, endBeat}) {
         let startPosition = findPosition(startBeat);
         let endPosition = findPosition(endBeat);
