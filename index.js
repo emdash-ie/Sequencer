@@ -1,8 +1,25 @@
 import Flero from "./sequencer.js";
 let MajorPentatonicScale = Flero.createOctaveScale({scaleNotes: [0, 2, 4, 7, 9], octave: 0});
 
+let noteSequence = Flero.createEmptyNoteSequence();
+let notes = [
+    {start: 0, length: 1, number: 1},
+    {start: 1, length: 1, number: 2},
+    {start: 2, length: 1, number: 3},
+    {start: 3, length: 1, number: 4},
+    {start: 5, length: 1, number: 2},
+    {start: 6, length: 1, number: 3},
+]
+
+for (let note of notes) {
+    noteSequence.addNote(note);
+}
+
 let audioContext = new AudioContext();
-let sequencer = Flero.createSequencer({scale: MajorPentatonicScale, tempo: 144, audioContext: audioContext});
+let sequencer = Flero.createSequencer(
+    {scale: MajorPentatonicScale, tempo: 144,
+        audioContext: audioContext, noteSequence: noteSequence}
+);
 
 let playButton = document.querySelector('#play');
 let pauseButton = document.querySelector('#pause');

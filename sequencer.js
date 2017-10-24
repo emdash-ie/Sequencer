@@ -9,8 +9,9 @@ let Sequencer = {
      * @param initialBpm The initial tempo the sequencer should use, in beats
      *        per minute.
      * @param audioContext {AudioContext} The audio context the sequencer should use.
+     * @param noteSequence The sequence of notes the sequencer should play.
      */
-    init: function(scale, initialBpm, audioContext) {
+    init: function(scale, initialBpm, audioContext, noteSequence) {
        this.audioContext = audioContext;
        this.output = this.audioContext.createGain();
        this.output.gain.value = 0.25;
@@ -21,8 +22,8 @@ let Sequencer = {
            beatsPerMinute: initialBpm,
            referenceTime: this.audioContext.currentTime,
        })
+       this.noteSequence = noteSequence;
     },
-    timeline: null,
     playing: false,
     lookahead: 0.1,
     scheduleIntervalMs: 25,
@@ -33,90 +34,36 @@ let Sequencer = {
         return this.timeline.beatsPerMinute;
     },
     /**
-     * The time that the next note will be scheduled to play.
-     */
-    get nextNoteTime() {
-        return this.timeline.timeFor(this.beatNumber);
-    },
-    /**
-     * The current beat.
+     * The next beat to be scheduled.
      */
     beatNumber: 0,
     /**
-     * The sequence of notes the sequencer plays.
-     */
-    notes: [
-        [
-            {
-                length: 2,
-                note: 0,
-            },
-        ],
-        [],
-        [
-            {
-                length: 2,
-                note: 1,
-            },
-        ],
-        [],
-        [
-            {
-                length: 2,
-                note: 2,
-            },
-        ],
-        [],
-        [
-            {
-                length: 1,
-                note: 3,
-            },
-        ],
-        [
-            {
-                length: 1,
-                note: 4,
-            },
-        ],
-    ],
-    /**
-     * Periodically schedules upcoming notes for playback.
+     * Schedules upcoming notes for playback.
      */
     scheduleNotes: function() {
-        while (this.nextNoteTime < this.audioContext.currentTime + this.lookahead) {
-            for (let thisNote of this.notes[this.beatNumber]) {
-                let oscillator = this.audioContext.createOscillator();
-                oscillator.type = 'sine';
-                oscillator.frequency.value = this.scale.frequencyOf(thisNote.note);
+        let startBeat = this.beatNumber;
+        let endBeat = this.timeline.beatFor(this.audioContext.currentTime + this.lookahead);
+        let notes = this.noteSequence.getNotes({startBeat: startBeat, endBeat: endBeat});
+        for (let thisNote of notes) {
+            let oscillator = this.audioContext.createOscillator();
+            oscillator.type = 'sine';
+            oscillator.frequency.value = this.scale.frequencyOf(thisNote.number);
 
-                oscillator.connect(this.output);
-                oscillator.start(this.nextNoteTime);
-                oscillator.stop(this.nextNoteTime + this.noteLength(thisNote.length));
-            }
-            this.nextNote();
+            oscillator.connect(this.output);
+            oscillator.start(this.timeline.timeFor(thisNote.start));
+            oscillator.stop(this.timeline.timeFor(thisNote.start + thisNote.length));
         }
+        this.updateBeat(endBeat);
     },
     /**
-     * Moves on to the next note in the sequence.
+     * Updates the last-scheduled beat, and loops the sequence if needed.
      */
-    nextNote: function() {
-        this.beatNumber++;
+    updateBeat: function(newBeat) {
+        this.beatNumber = newBeat;
         if (this.beatNumber >= 8) {
-            this.beatNumber %= 8;
+            this.beatNumber = 0;
             this.timeline = this.timeline.copyTimeShifted({beatDelay: 8});
         }
-    },
-    /**
-     * Calculates the length in time of a number of beats.
-     *
-     * This functionality will shortly be moved to the timeline object.
-     *
-     * @param beats A length in beats to convert to seconds.
-     */
-    noteLength: function(beats) {
-        let secondsPerQuaver = 60 / this.tempo / 2;
-        return beats * secondsPerQuaver;
     },
     /**
      * Starts playback.
@@ -241,8 +188,8 @@ let BasicNoteSequence = {
      * @return An array of all notes in the range.
      */
     getNotes: function({startBeat, endBeat}) {
-        let startPosition = findPosition(startBeat);
-        let endPosition = findPosition(endBeat);
+        let startPosition = this.findPosition(startBeat);
+        let endPosition = this.findPosition(endBeat);
         return this.notes.slice(startPosition, endPosition);
     },
 }
@@ -410,10 +357,11 @@ export default {
      * @param scale The scale to use to map note numbers to frequencies.
      * @param tempo The initial tempo to set the sequencer to, in beats per minute.
      * @param audioContext {AudioContext} The audio context the sequencer should use.
+     * @param noteSequence The sequence of notes the sequencer should play.
      */
-    createSequencer: function({scale, tempo, audioContext}) {
+    createSequencer: function({scale, tempo, audioContext, noteSequence}) {
         let sequencer = Object.create(Sequencer);
-        sequencer.init(scale, tempo, audioContext);
+        sequencer.init(scale, tempo, audioContext, noteSequence);
         return sequencer;
     },
     /**
@@ -426,4 +374,14 @@ export default {
     createOctaveScale: function({scaleNotes, tuningSystem=EqualTemperament, octave=0}) {
         return OctaveScale.createScale({scaleNotes: scaleNotes, tuningSystem: tuningSystem, octave: octave});
     },
+    /**
+     * Creates an empty sequence of notes.
+     *
+     * @return A NoteSequence with no notes in it.
+     */
+    createEmptyNoteSequence: function() {
+        let newSequence = Object.create(BasicNoteSequence);
+        newSequence.init();
+        return newSequence;
+    }
 }
