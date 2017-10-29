@@ -169,7 +169,7 @@ let BasicNoteSequence = {
      * @return The index associated with that beat.
      */
     findPosition: function(beat) {
-        let index = this.notes.length - 1;
+        let index = this.notes.length;
         for (let entry of this.notes.entries()) {
             if (entry[1].start >= beat) {
                 index = entry[0];
