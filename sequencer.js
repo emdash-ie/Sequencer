@@ -143,6 +143,20 @@ function createNote({start=0, length=1, number=0}) {
     return {start: start, length: length, number: number};
 }
 
+/**
+ * A note with a specific pitch – a combination of a name and a tuning system
+ * which relates the name to a pitch.
+ */
+let PitchedNote = {
+    init: function({note, tuning}) {
+        this.note = note;
+        this.tuning = tuning;
+    },
+    getFrequency: function() {
+        return this.tuning.frequencyOf(this.note);
+    }
+}
+
 
 /**
  * A basic representation of a sequence of notes, that uses a linear search to find and add notes.
