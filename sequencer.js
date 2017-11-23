@@ -157,6 +157,29 @@ let PitchedNote = {
     }
 }
 
+/**
+ * A note which has a pitch and a start and end beat.
+ */
+let SequencedNote = {
+    /**
+     * Creates a new sequenced note.
+     *
+     * @param note The PitchedNote this note should be.
+     * @param startBeat The beat this note starts at.
+     * @param length The length of this note, in beats.
+     */
+    init: function({note, startBeat, length}) {
+        this.note = note;
+        this.start = startBeat;
+        this.end = this.start + length;
+    },
+    get frequency: function() {
+        return this.note.getFrequency();
+    },
+    get length() {
+        return this.end - this.start;
+    }
+}
 
 /**
  * A basic representation of a sequence of notes, that uses a linear search to find and add notes.
