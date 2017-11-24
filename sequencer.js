@@ -148,9 +148,17 @@ function createNote({start=0, length=1, number=0}) {
  * which relates the name to a pitch.
  */
 let PitchedNote = {
-    init: function({note, tuning}) {
-        this.note = note;
-        this.tuning = tuning;
+    /**
+     * Creates a new pitched note.
+     *
+     * @param note The Note the pitched note should be.
+     * @param tuning The tuning system the pitched note should use.
+     */
+    createPitchedNote: function({note, tuning}) {
+        let pitchedNote = Object.create(this);
+        pitchedNote.note = note;
+        pitchedNote.tuning = tuning;
+        return pitchedNote;
     },
     getFrequency: function() {
         return this.tuning.frequencyOf(this.note);
