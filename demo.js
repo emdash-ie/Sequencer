@@ -1,8 +1,10 @@
-import Flero from "./sequencer.js";
-import Mosco from "./note.js";
-let MajorPentatonicScale = Mosco.createOctaveScale({scaleNotes: [0, 2, 4, 7, 9], octave: 0});
+import Sequencer from "./sequencer.js";
+import Note from "./note.js";
+import NoteSequence from "./noteSequence.js"
 
-let noteSequence = Mosco.createEmptyNoteSequence();
+let MajorPentatonicScale = Note.createOctaveScale({scaleNotes: [0, 2, 4, 7, 9], octave: 0});
+
+let noteSequence = NoteSequence.createEmptyNoteSequence();
 let notes = [
     {start: 0, length: 1, number: 1},
     {start: 1, length: 1, number: 2},
@@ -17,7 +19,7 @@ for (let note of notes) {
 }
 
 let audioContext = new AudioContext();
-let sequencer = Flero.createSequencer(
+let sequencer = Sequencer.createSequencer(
     {scale: MajorPentatonicScale, tempo: 144,
         audioContext: audioContext, noteSequence: noteSequence}
 );
