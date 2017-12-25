@@ -49,7 +49,7 @@ let SequencedNote = {
         this.start = startBeat;
         this.end = this.start + length;
     },
-    get frequency: function() {
+    get frequency() {
         return this.note.getFrequency();
     },
     get length() {
