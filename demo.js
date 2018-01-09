@@ -37,10 +37,10 @@ let playButton = document.querySelector('#play');
 let pauseButton = document.querySelector('#pause');
 let stopButton = document.querySelector('#stop');
 let tempoControl = document.querySelector('#tempoControl');
-let noteCanvas = document.querySelector('#noteSurface');
+let noteSurface = document.querySelector('#noteSurface');
 
 let noteDisplay = new NoteDisplay({
-    canvas: noteCanvas,
+    noteSurface: noteSurface,
     noteSequence: noteSequence,
     xSize: 400/8,
     ySize: 400/6
