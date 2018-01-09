@@ -1,7 +1,8 @@
 import Note from "./note.js"
 
 /**
- * A basic representation of a sequence of notes, that uses a linear search to find and add notes.
+ * A basic representation of a sequence of notes, that uses a linear search to
+ * find and add notes.
  */
 let BasicNoteSequence = {
     init: function() {

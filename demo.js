@@ -3,7 +3,12 @@ import Note from "./note.js";
 import NoteSequence from "./noteSequence.js";
 import Tuning from "./tuning.js";
 
-let MajorPentatonicScale = Tuning.createOctaveScale({scaleNotes: [0, 2, 4, 7, 9], octave: 0});
+let MajorPentatonicScale = Tuning.createOctaveScale(
+    {
+        scaleNotes: [0, 2, 4, 7, 9],
+        octave: 0
+    }
+);
 
 let noteSequence = NoteSequence.createEmptyNoteSequence();
 let notes = [
@@ -33,5 +38,11 @@ let tempoControl = document.querySelector('#tempoControl');
 playButton.addEventListener('click', function() {sequencer.play();}, false);
 pauseButton.addEventListener('click', function() {sequencer.pause();}, false);
 stopButton.addEventListener('click', function() {sequencer.stop();}, false);
-tempoControl.addEventListener('input', function(e) {sequencer.changeTempo(e.target.value)}, false);
+tempoControl.addEventListener(
+    'input',
+    function(e) {
+        sequencer.changeTempo(e.target.value)
+    },
+    false
+);
 tempoControl.value = sequencer.tempo;

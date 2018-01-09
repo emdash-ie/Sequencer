@@ -8,7 +8,8 @@ let Sequencer = {
      * @param scale A scale object that maps note numbers to frequencies.
      * @param initialBpm The initial tempo the sequencer should use, in beats
      *        per minute.
-     * @param audioContext {AudioContext} The audio context the sequencer should use.
+     * @param audioContext {AudioContext} The audio context the sequencer should
+     *        use.
      * @param noteSequence The sequence of notes the sequencer should play.
      */
     init: function(scale, initialBpm, audioContext, noteSequence) {
@@ -42,16 +43,28 @@ let Sequencer = {
      */
     scheduleNotes: function() {
         let startBeat = this.beatNumber;
-        let endBeat = this.timeline.beatFor(this.audioContext.currentTime + this.lookahead);
-        let notes = this.noteSequence.getNotes({startBeat: startBeat, endBeat: endBeat});
+        let endBeat = this.timeline.beatFor(
+            this.audioContext.currentTime + this.lookahead
+        );
+        let notes = this.noteSequence.getNotes(
+            {
+                startBeat: startBeat,
+                endBeat: endBeat
+            }
+        );
         for (let thisNote of notes) {
             let oscillator = this.audioContext.createOscillator();
             oscillator.type = 'sine';
-            oscillator.frequency.value = this.scale.frequencyOf(thisNote.number);
+            oscillator.frequency.value =
+                this.scale.frequencyOf(thisNote.number);
 
             oscillator.connect(this.output);
             oscillator.start(this.timeline.timeFor(thisNote.start));
-            oscillator.stop(this.timeline.timeFor(thisNote.start + thisNote.length));
+            oscillator.stop(
+                this.timeline.timeFor(
+                    thisNote.start + thisNote.length
+                )
+            );
         }
         this.updateBeat(endBeat);
     },
@@ -76,7 +89,10 @@ let Sequencer = {
             return;
         }
         let playFunction = function() {
-            this.intervalID = window.setInterval(this.scheduleNotes.bind(this), this.scheduleIntervalMs);
+            this.intervalID = window.setInterval(
+                this.scheduleNotes.bind(this),
+                this.scheduleIntervalMs
+            );
             this.playing = true;
         };
 
@@ -149,14 +165,16 @@ let BeatTimeline = {
         this.referenceTime = referenceTime;
     },
     /**
-     * Returns the time for a specific beat number, in the timebase of AudioContext.currentTime().
+     * Returns the time for a specific beat number, in the timebase of
+     * AudioContext.currentTime().
      *
      * @param beatNumber The beat to find the time for.
      * @return The time for the beat.
      */
     timeFor: function(beatNumber) {
         let beatsSinceReference = beatNumber - this.referenceBeat;
-        let secondsSinceReference = beatsSinceReference * 60 / this.beatsPerMinute;
+        let secondsSinceReference
+            = beatsSinceReference * 60 / this.beatsPerMinute;
         return this.referenceTime + secondsSinceReference;
     },
     /**
@@ -167,7 +185,8 @@ let BeatTimeline = {
      */
     beatFor: function(time) {
         let secondsSinceReference = time - this.referenceTime;
-        let beatsSinceReference = secondsSinceReference * this.beatsPerMinute / 60;
+        let beatsSinceReference
+            = secondsSinceReference * this.beatsPerMinute / 60;
         return this.referenceBeat + beatsSinceReference;
     },
     /**
@@ -187,15 +206,18 @@ let BeatTimeline = {
         newTimeline.init({
             beatsPerMinute: this.beatsPerMinute,
             referenceBeat: this.referenceBeat,
-            referenceTime: this.timeFor(this.referenceBeat + beatDelay) + timeDelay,
+            referenceTime: this.timeFor(this.referenceBeat + beatDelay)
+                + timeDelay,
         });
         return newTimeline;
     },
     /**
      * Creates a copy of this timeline with a new reference.
      *
-     * @param referenceTime The time value to use for the new timeline’s reference.
-     * @param referenceBeat The beat value to use for the new timeline’s reference. Defaults to 0.
+     * @param referenceTime The time value to use for the new timeline’s
+     *        reference.
+     * @param referenceBeat The beat value to use for the new timeline’s
+     *        reference. Defaults to 0.
      * @return A copy of this timeline, using the specified reference.
      */
     copyStartingAt: function({referenceTime, referenceBeat = 0}) {
@@ -232,8 +254,10 @@ export default {
      * Creates a new sequencer, an object which plays a sequence of notes.
      *
      * @param scale The scale to use to map note numbers to frequencies.
-     * @param tempo The initial tempo to set the sequencer to, in beats per minute.
-     * @param audioContext {AudioContext} The audio context the sequencer should use.
+     * @param tempo The initial tempo to set the sequencer to, in beats per
+     *        minute.
+     * @param audioContext {AudioContext} The audio context the sequencer should
+     *        use.
      * @param noteSequence The sequence of notes the sequencer should play.
      */
     createSequencer: function({scale, tempo, audioContext, noteSequence}) {

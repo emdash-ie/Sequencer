@@ -42,8 +42,10 @@ let OctaveScale = {
      * Creates a new octave scale.
      *
      * @param scaleNotes The notes the scale should contain.
-     * @param tuningSystem The tuning system that should be used to convert note numbers to frequencies.
-     * @param octave An offset to use for the octave of the scale. For example, an offset value of 1 shifts every note up an octave.
+     * @param tuningSystem The tuning system that should be used to convert note
+     *        numbers to frequencies.
+     * @param octave An offset to use for the octave of the scale. For example,
+     *        an offset value of 1 shifts every note up an octave.
      * @return A new octave scale.
      */
     createScale: function({
@@ -65,13 +67,21 @@ export default {
      */
     equalTemperament: EqualTemperament,
     /**
-     * Creates a new octave scale, which is a scale whose notes repeat every octave.
+     * Creates a new octave scale, which is a scale whose notes repeat every
+     * octave.
      *
      * @param scaleNotes The intervals contained in the scale.
-     * @param tuningSystem A mapping of note numbers to frequencies. Defaults to 12-tone equal temperament.
-     * @param octave An octave offset – a value of 1 shifts all notes up an octave, for example.
+     * @param tuningSystem A mapping of note numbers to frequencies. Defaults to
+     *        12-tone equal temperament.
+     * @param octave An octave offset – a value of 1 shifts all notes up an
+     * octave, for example.
      */
-    createOctaveScale: function({scaleNotes, tuningSystem=EqualTemperament, octave=0}) {
-        return OctaveScale.createScale({scaleNotes: scaleNotes, tuningSystem: tuningSystem, octave: octave});
+    createOctaveScale: function({scaleNotes, tuningSystem=EqualTemperament,
+            octave=0}) {
+        return OctaveScale.createScale({
+            scaleNotes: scaleNotes,
+            tuningSystem: tuningSystem,
+            octave: octave
+        });
     },
 }
