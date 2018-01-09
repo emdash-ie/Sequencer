@@ -41,7 +41,9 @@ let noteCanvas = document.querySelector('#noteSurface');
 
 let noteDisplay = new NoteDisplay({
     canvas: noteCanvas,
-    noteSequence: noteSequence
+    noteSequence: noteSequence,
+    xSize: 400/8,
+    ySize: 400/6
 });
 noteDisplay.drawNotes();
 
