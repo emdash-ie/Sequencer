@@ -39,7 +39,10 @@ let stopButton = document.querySelector('#stop');
 let tempoControl = document.querySelector('#tempoControl');
 let noteCanvas = document.querySelector('#noteSurface');
 
-let noteDisplay = new NoteDisplay(noteCanvas, noteSequence);
+let noteDisplay = new NoteDisplay({
+    canvas: noteCanvas,
+    noteSequence: noteSequence
+});
 noteDisplay.drawNotes();
 
 playButton.addEventListener('click', function() {sequencer.play();}, false);

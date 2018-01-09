@@ -2,7 +2,7 @@
  * Displays notes from a note sequence in a canvas.
  */
 export class NoteDisplay {
-    constructor(canvas, noteSequence) {
+    constructor({canvas, noteSequence}) {
         this.context = canvas.getContext("2d");
         this.sequence = noteSequence;
         this.x = 0;
