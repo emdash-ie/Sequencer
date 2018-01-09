@@ -11,16 +11,14 @@ let BasicNoteSequence = {
     /**
      * Adds a new note to the sequence.
      *
-     * @param start The starting beat of the note.
-     * @param length The length of the note in beats.
-     * @param number The note number of the note.
+     * @param {BasicNote} note The note to add to the sequence.
      */
-    addNote: function({start=0, length=1, number=0}) {
-        let position = this.findPosition(start);
+    addNote: function(note) {
+        let position = this.findPosition(note.start);
         this.notes.splice(
             position,
             0,
-            Note.createNote({start: start, length: length, number: number})
+            note
         );
     },
     /**

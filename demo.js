@@ -18,7 +18,7 @@ let notes = [
     {start: 3, length: 1, number: 4},
     {start: 5, length: 1, number: 2},
     {start: 6, length: 1, number: 3},
-]
+];
 
 for (let note of notes) {
     noteSequence.addNote(note);

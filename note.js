@@ -1,6 +1,15 @@
 import Tuning from "./tuning.js";
 
 /**
+ * A basic note, which has a starting beat, a length, and a note number.
+ *
+ * @typedef {Object} BasicNote
+ * @property {number} start - The beat the note starts at.
+ * @property {number} length - The length of the note, in beats.
+ * @property {number} number - The note number of the note.
+ */
+
+/**
  * Creates a new note.
  *
  * @param start The beat the note should start at.
