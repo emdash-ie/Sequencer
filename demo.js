@@ -2,6 +2,7 @@ import Sequencer from "./sequencer.js";
 import Note from "./note.js";
 import NoteSequence from "./noteSequence.js";
 import Tuning from "./tuning.js";
+import {NoteDisplay} from "./noteDisplay.js";
 
 let MajorPentatonicScale = Tuning.createOctaveScale(
     {
@@ -36,6 +37,10 @@ let playButton = document.querySelector('#play');
 let pauseButton = document.querySelector('#pause');
 let stopButton = document.querySelector('#stop');
 let tempoControl = document.querySelector('#tempoControl');
+let noteCanvas = document.querySelector('#noteSurface');
+
+let noteDisplay = new NoteDisplay(noteCanvas, noteSequence);
+noteDisplay.drawNotes();
 
 playButton.addEventListener('click', function() {sequencer.play();}, false);
 pauseButton.addEventListener('click', function() {sequencer.pause();}, false);

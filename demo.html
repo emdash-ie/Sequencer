@@ -6,10 +6,15 @@
     <script type="module" src="demo.js"></script>
 </head>
 <body>
-    <button type="button" id="play">Play</button>
-    <button type="button" id="pause">Pause</button>
-    <button type="button" id="stop">Stop</button>
-    <label for="tempoControl">Tempo:</label>
-    <input type="range" min="40" max="500" id="tempoControl"/>
+    <section>
+        <button type="button" id="play">Play</button>
+        <button type="button" id="pause">Pause</button>
+        <button type="button" id="stop">Stop</button>
+        <label for="tempoControl">Tempo:</label>
+        <input type="range" min="40" max="500" id="tempoControl"/>
+    </section>
+    <section>
+        <canvas id="noteSurface" width="400px" height="400px"></canvas>
+    </section>
 </body>
 </html>
