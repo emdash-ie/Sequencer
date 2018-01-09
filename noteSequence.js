@@ -51,6 +51,18 @@ let BasicNoteSequence = {
         let endPosition = this.findPosition(endBeat);
         return this.notes.slice(startPosition, endPosition);
     },
+    /**
+     * Removes a note from the note sequence, if it is contained in the
+     * sequence.
+     *
+     * @param {BasicNote} note The note to remove from the sequence.
+     */
+    removeNote: function(note) {
+        let position = this.notes.indexOf(note);
+        if (position != -1) {
+            this.notes.splice(position, 1);
+        }
+    },
 }
 
 export default {

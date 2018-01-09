@@ -24,6 +24,8 @@ for (let note of notes) {
     noteSequence.addNote(note);
 }
 
+noteSequence.removeNote(notes[2]);
+
 let audioContext = new AudioContext();
 let sequencer = Sequencer.createSequencer(
     {scale: MajorPentatonicScale, tempo: 144,
