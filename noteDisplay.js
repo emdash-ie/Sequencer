@@ -2,12 +2,19 @@
  * Displays notes from a note sequence in a canvas.
  */
 export class NoteDisplay {
-    constructor({canvas, noteSequence}) {
+    /**
+     * Creates a new NoteDisplay.
+     *
+     * @param canvas The canvas on which to display the notes.
+     * @param noteSequence The sequence of notes to be displayed.
+     * @param beatSize The size used to represent 1 beat when drawing.
+     */
+    constructor({canvas, noteSequence, beatSize=20}) {
         this.context = canvas.getContext("2d");
         this.sequence = noteSequence;
+        this.size = beatSize;
         this.x = 0;
         this.y = 0;
-        this.size = 20;
     }
     /**
      * Draws the notes onscreen.
