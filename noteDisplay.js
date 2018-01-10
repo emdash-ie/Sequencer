@@ -24,14 +24,45 @@ export class NoteDisplay {
         let notes = this.sequence.getNotes({startBeat: 0, endBeat: 8});
 
         for (let note of notes) {
-            let node = document.createElement('div');
-            node.style.position = 'absolute';
-            node.style.height = this.ySize + 'px';
-            node.style.width = (note.length * this.xSize) + 'px';
-            node.style.left = (note.start * this.xSize) + 'px';
-            node.style.top = (400 - (note.number * this.ySize)) + 'px';
-            node.style.background = 'blue';
-            this.surface.appendChild(node);
+            let block = new NoteBlock({
+                note: note,
+                xSize: this.xSize,
+                ySize: this.ySize
+            });
+            block.displayOn(this.surface);
         }
+    }
+}
+
+/**
+ * A block representing a note in a note sequence.
+ */
+class NoteBlock {
+    /**
+     * Creates a new note block for a specific note.
+     */
+    constructor({note, xSize, ySize}) {
+        this.note = note;
+        this.element = document.createElement('div');
+        this.element.style.position = 'absolute';
+        this.element.style.height = ySize + 'px';
+        this.element.style.width = (note.length * xSize) + 'px';
+        this.element.style.left = (note.start * xSize) + 'px';
+        this.element.style.top = (400 - (note.number * ySize)) + 'px';
+        this.element.style.background = 'blue';
+
+        this.element.setAttribute('draggable', 'true');
+        this.element.addEventListener('dragstart', this.dragListener, false);
+    }
+
+    /**
+     * Displays the block on a surface.
+     */
+    displayOn(surface) {
+        surface.appendChild(this.element);
+    }
+
+    dragListener(e) {
+        e.dataTransfer.setData('text/plain', 'wub');
     }
 }
