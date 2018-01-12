@@ -16,6 +16,7 @@ export class NoteDisplay {
         this.sequence = noteSequence;
         this.xSize = xSize;
         this.ySize = ySize;
+        this.blocks = new Map();
     }
     /**
      * Draws the notes onscreen.
@@ -29,6 +30,7 @@ export class NoteDisplay {
                 xSize: this.xSize,
                 ySize: this.ySize
             });
+            this.blocks.set(block.id, block);
             block.displayOn(this.surface);
         }
     }
@@ -43,6 +45,8 @@ class NoteBlock {
      */
     constructor({note, xSize, ySize}) {
         this.note = note;
+        this.id = NoteBlock.nextId();
+
         this.element = document.createElement('div');
         this.element.style.position = 'absolute';
         this.element.style.height = ySize + 'px';
@@ -52,7 +56,11 @@ class NoteBlock {
         this.element.style.background = 'blue';
 
         this.element.setAttribute('draggable', 'true');
-        this.element.addEventListener('dragstart', this.dragListener, false);
+        this.element.addEventListener(
+            'dragstart',
+            this.dragListener.bind(this),
+            false
+        );
     }
 
     /**
@@ -63,6 +71,24 @@ class NoteBlock {
     }
 
     dragListener(e) {
-        e.dataTransfer.setData('text/plain', 'wub');
+        e.dataTransfer.setData('application/note-id', this.id)
     }
 }
+
+/**
+ * Generates ids for the noteblocks.
+ */
+NoteBlock.idGenerator = function*() {
+    let i = 0;
+    while (true) {
+        yield i;
+        i++;
+    }
+}();
+
+/**
+ * Returns the next noteblock id.
+ */
+NoteBlock.nextId = function() {
+    return NoteBlock.idGenerator.next().value;
+};
