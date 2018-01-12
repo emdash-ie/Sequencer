@@ -13,11 +13,23 @@ export class NoteDisplay {
      */
     constructor({noteSurface, noteSequence, xSize=40, ySize=20}) {
         this.surface = noteSurface;
+        this.addSurfaceListeners();
         this.sequence = noteSequence;
         this.xSize = xSize;
         this.ySize = ySize;
         this.blocks = new Map();
     }
+
+    /**
+     * Adds the drag-and-drop listeners to the surface.
+     */
+    addSurfaceListeners() {
+        let s = this.surface;
+        s.addEventListener('dragenter', this.dragOverListener, false);
+        s.addEventListener('dragover', this.dragOverListener, false);
+        s.addEventListener('drop', this.dropListener.bind(this), false);
+    }
+
     /**
      * Draws the notes onscreen.
      */
@@ -33,6 +45,17 @@ export class NoteDisplay {
             this.blocks.set(block.id, block);
             block.displayOn(this.surface);
         }
+    }
+
+    dragOverListener(event) {
+        if ([...event.dataTransfer.types].includes('application/note-id')) {
+            event.preventDefault();
+        }
+    }
+
+    dropListener(event) {
+        let blockId = event.dataTransfer.getData('application/note-id');
+        console.log(blockId);
     }
 }
 
