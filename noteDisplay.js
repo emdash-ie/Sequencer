@@ -13,12 +13,23 @@ export class NoteDisplay {
      */
     constructor({noteSurface, noteSequence, xSize=40, ySize=20}) {
         this.surface = noteSurface;
+        this.surface.style.position = 'relative';
         this.addSurfaceListeners();
         this.sequence = noteSequence;
         this.xSize = xSize;
         this.ySize = ySize;
         this.blocks = new Map();
         this.notes = new Map();
+        this.converter = new LinearScaler({
+            'beat': {
+                'zero': 40,
+                'scaling': 40
+            },
+            'pitch': {
+                'zero': 400,
+                'scaling': -20
+            }
+        });
     }
 
     /**
@@ -38,10 +49,20 @@ export class NoteDisplay {
         let notes = this.sequence.getNotes({startBeat: 0, endBeat: 8});
 
         for (let note of notes) {
+            let startPosition = this.converter.outputValuesFor({
+                beat: note.start,
+                pitch: note.number
+            });
+            let endPosition = this.converter.outputValuesFor({
+                beat: note.start + note.length,
+                pitch: note.number + 1
+            });
             let block = new NoteBlock({
-                note: note,
-                xSize: this.xSize,
-                ySize: this.ySize
+                top: startPosition.pitch,
+                left: startPosition.beat,
+                height: Math.abs(endPosition.pitch - startPosition.pitch),
+                width: Math.abs(endPosition.beat - startPosition.beat),
+                unit: 'px',
             });
             this.blocks.set(block.id, block);
             this.notes.set(block.id, note);
@@ -57,10 +78,56 @@ export class NoteDisplay {
 
     dropListener(event) {
         let blockId = Number(event.dataTransfer.getData('application/note-id'));
-        this.noteSequence.moveNote({
+        this.sequence.moveNote({
             note: this.notes.get(blockId),
-            newStart: 0
+            newStart: this.converter
+                .inputValuesFor({'beat': event.clientX})
+                .beat
         });
+    }
+}
+
+/**
+ * Converts units using linear relationships.
+ *
+ * @param units An object where each property describes a unit to provide
+ *            scaling for.
+ */
+class LinearScaler {
+    constructor(units) {
+        this.units = units;
+    }
+
+    /**
+     * Calculates the output values for a set of input values.
+     */
+    outputValuesFor(inputValues) {
+        let outputValues = {};
+
+        for (let unit in inputValues) {
+            if (this.units[unit] != undefined) {
+                outputValues[unit] = this.units[unit].zero
+                    + this.units[unit].scaling * inputValues[unit];
+            }
+        }
+
+        return outputValues;
+    }
+
+    /**
+     * Calculates the input values for a set of output values.
+     */
+    inputValuesFor(outputValues) {
+        let inputValues = {};
+
+        for (let unit in outputValues) {
+            if (this.units[unit] != undefined) {
+                inputValues[unit] = (outputValues[unit] - this.units[unit].zero)
+                    / this.units[unit].scaling;
+            }
+        }
+
+        return inputValues;
     }
 }
 
@@ -70,17 +137,23 @@ export class NoteDisplay {
 class NoteBlock {
     /**
      * Creates a new note block for a specific note.
+     *
+     * @param top The “top” value the block’s DOM element should have.
+     * @param left The “left” value the block’s DOM element should have.
+     * @param height The “height” value the block’s DOM element should have.
+     * @param width The “width” value the block’s DOM element should have.
+     * @param unit The unit the block’s DOM element should use, e.g. "px" or
+     *        "em".
      */
-    constructor({note, xSize, ySize}) {
-        this.note = note;
+    constructor({top, left, height, width, unit}) {
         this.id = NoteBlock.nextId();
 
         this.element = document.createElement('div');
         this.element.style.position = 'absolute';
-        this.element.style.height = ySize + 'px';
-        this.element.style.width = (note.length * xSize) + 'px';
-        this.element.style.left = (note.start * xSize) + 'px';
-        this.element.style.top = (400 - (note.number * ySize)) + 'px';
+        this.element.style.height = height + unit;
+        this.element.style.width = width + unit;
+        this.element.style.left = left + unit;
+        this.element.style.top = top + unit;
         this.element.style.background = 'blue';
 
         this.element.setAttribute('draggable', 'true');
