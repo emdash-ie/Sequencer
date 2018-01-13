@@ -18,6 +18,7 @@ export class NoteDisplay {
         this.xSize = xSize;
         this.ySize = ySize;
         this.blocks = new Map();
+        this.notes = new Map();
     }
 
     /**
@@ -43,6 +44,7 @@ export class NoteDisplay {
                 ySize: this.ySize
             });
             this.blocks.set(block.id, block);
+            this.notes.set(block.id, note);
             block.displayOn(this.surface);
         }
     }
@@ -54,8 +56,11 @@ export class NoteDisplay {
     }
 
     dropListener(event) {
-        let blockId = event.dataTransfer.getData('application/note-id');
-        console.log(blockId);
+        let blockId = Number(event.dataTransfer.getData('application/note-id'));
+        this.noteSequence.moveNote({
+            note: this.notes.get(blockId),
+            newStart: 0
+        });
     }
 }
 

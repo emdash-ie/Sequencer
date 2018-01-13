@@ -63,6 +63,17 @@ let BasicNoteSequence = {
             this.notes.splice(position, 1);
         }
     },
+    /**
+     * Changes the starting beat of a note in the sequence.
+     *
+     * @param note The note whose starting beat should be changed.
+     * @param newStart The new starting beat for the note.
+     */
+    moveNote: function({note, newStart}) {
+        let newPosition = this.findPosition(newStart);
+        this.removeNote(note);
+        this.notes.splice(newPosition, 0, note);
+    }
 }
 
 export default {
