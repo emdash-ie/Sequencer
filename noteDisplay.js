@@ -30,6 +30,7 @@ export class NoteDisplay {
                 'scaling': -20
             }
         });
+        this.sequence.addChangeListener(this);
     }
 
     /**
@@ -70,6 +71,13 @@ export class NoteDisplay {
         }
     }
 
+    deleteBlocks() {
+        for (let [key, value] of this.blocks.entries()) {
+            value.delete();
+            this.blocks.delete(key);
+        }
+    }
+
     dragOverListener(event) {
         if ([...event.dataTransfer.types].includes('application/note-id')) {
             event.preventDefault();
@@ -84,6 +92,14 @@ export class NoteDisplay {
                 .inputValuesFor({'beat': event.clientX})
                 .beat
         });
+    }
+
+    /**
+     * Responds to a change in the note sequence.
+     */
+    notify() {
+        this.deleteBlocks();
+        this.drawNotes();
     }
 }
 
@@ -169,6 +185,10 @@ class NoteBlock {
      */
     displayOn(surface) {
         surface.appendChild(this.element);
+    }
+
+    delete() {
+        this.element.parentNode.removeChild(this.element);
     }
 
     dragListener(e) {

@@ -7,6 +7,7 @@ import Note from "./note.js"
 let BasicNoteSequence = {
     init: function() {
         this.notes = [];
+        this.listeners = [];
     },
     /**
      * Adds a new note to the sequence.
@@ -20,6 +21,7 @@ let BasicNoteSequence = {
             0,
             note
         );
+        this.notifyListeners();
     },
     /**
      * Finds the position in the note list associated with a certain beat.
@@ -62,6 +64,7 @@ let BasicNoteSequence = {
         if (position != -1) {
             this.notes.splice(position, 1);
         }
+        this.notifyListeners();
     },
     /**
      * Changes the starting beat of a note in the sequence.
@@ -73,6 +76,24 @@ let BasicNoteSequence = {
         let newPosition = this.findPosition(newStart);
         this.removeNote(note);
         this.notes.splice(newPosition, 0, note);
+        this.notifyListeners();
+    },
+    /**
+     * Adds a listener that will be notified of any changes to the notes in this
+     * note sequence.
+     *
+     * The listener’s "notify" method will be called with no arguments.
+     */
+    addChangeListener: function(listener) {
+        this.listeners.push(listener);
+    },
+    /**
+     * Notifies the listeners of changes to the notes.
+     */
+    notifyListeners: function() {
+        for (let listener of this.listeners) {
+            listener.notify();
+        }
     }
 }
 
