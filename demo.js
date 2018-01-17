@@ -4,12 +4,10 @@ import NoteSequence from "./noteSequence.js";
 import Tuning from "./tuning.js";
 import {NoteDisplay} from "./noteDisplay.js";
 
-let MajorPentatonicScale = Tuning.createOctaveScale(
-    {
-        scaleNotes: [0, 2, 4, 7, 9],
-        octave: 0
-    }
-);
+let MajorPentatonicScale = Tuning.createOctaveScale({
+    scaleNotes: [0, 2, 4, 7, 9],
+    octave: 0
+});
 
 let noteSequence = NoteSequence.createEmptyNoteSequence();
 let notes = [
@@ -28,10 +26,12 @@ for (let note of notes) {
 noteSequence.removeNote(notes[2]);
 
 let audioContext = new AudioContext();
-let sequencer = Sequencer.createSequencer(
-    {scale: MajorPentatonicScale, tempo: 144,
-        audioContext: audioContext, noteSequence: noteSequence}
-);
+let sequencer = Sequencer.createSequencer({
+    scale: MajorPentatonicScale,
+    tempo: 144,
+    audioContext: audioContext,
+    noteSequence: noteSequence
+});
 
 let playButton = document.querySelector('#play');
 let pauseButton = document.querySelector('#pause');
