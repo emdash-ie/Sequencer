@@ -73,8 +73,8 @@ let BasicNoteSequence = {
      * @param newStart The new starting beat for the note.
      */
     moveNote: function({note, newStart}) {
-        let newPosition = this.findPosition(newStart);
         this.removeNote(note);
+        let newPosition = this.findPosition(newStart);
         note.start = newStart;
         this.notes.splice(newPosition, 0, note);
         this.notifyListeners();
