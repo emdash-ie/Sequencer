@@ -75,6 +75,7 @@ let BasicNoteSequence = {
     moveNote: function({note, newStart}) {
         let newPosition = this.findPosition(newStart);
         this.removeNote(note);
+        note.start = newStart;
         this.notes.splice(newPosition, 0, note);
         this.notifyListeners();
     },
