@@ -20,14 +20,16 @@ export class NoteDisplay {
         this.ySize = ySize;
         this.blocks = new Map();
         this.notes = new Map();
-        this.converter = new LinearScaler({
+        this.converter = new ClippingLinearScaler({
             'beat': {
                 'zero': 40,
-                'scaling': 40
+                'scaling': 40,
+                'clip': 20,
             },
             'pitch': {
                 'zero': 400,
-                'scaling': -20
+                'scaling': -20,
+                'clip': 10,
             }
         });
         this.sequence.addChangeListener(this);
@@ -145,6 +147,33 @@ class LinearScaler {
         }
 
         return inputValues;
+    }
+}
+
+class ClippingLinearScaler {
+    constructor(units) {
+        this.units = units;
+        this.scaler = new LinearScaler(units);
+    }
+
+    outputValuesFor(inputValues) {
+        return this.scaler.outputValuesFor(inputValues);
+    }
+
+    inputValuesFor(outputValues) {
+        for (const unit in outputValues) {
+            outputValues[unit] = this.round({
+                value: outputValues[unit],
+                precision: this.units[unit].clip,
+                offset: this.units[unit].zero,
+            });
+        }
+        return this.scaler.inputValuesFor(outputValues);
+    }
+
+    round({value, precision, offset}) {
+        let rounded = Math.round((value - offset) / precision);
+        return (rounded * precision) + offset;
     }
 }
 
