@@ -89,11 +89,14 @@ export class NoteDisplay {
     dropListener(event) {
         let blockId = Number(event.dataTransfer.getData('application/note-id'));
         let block = this.blocks.get(blockId);
+        const newValues = this.converter.inputValuesFor({
+            'beat': event.clientX - block.dragOffset.x,
+            'pitch': event.clientY - block.dragOffset.y
+        });
         this.sequence.moveNote({
             note: this.notes.get(blockId),
-            newStart: this.converter
-                .inputValuesFor({'beat': event.clientX - block.dragOffset.x})
-                .beat
+            newStart: newValues.beat,
+            newPitch: newValues.pitch
         });
     }
 

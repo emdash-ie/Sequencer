@@ -71,11 +71,13 @@ let BasicNoteSequence = {
      *
      * @param note The note whose starting beat should be changed.
      * @param newStart The new starting beat for the note.
+     * @param newPitch The new pitch number for the note.
      */
-    moveNote: function({note, newStart}) {
+    moveNote: function({note, newStart, newPitch}) {
         this.removeNote(note);
         let newPosition = this.findPosition(newStart);
         note.start = newStart;
+        note.number = newPitch;
         this.notes.splice(newPosition, 0, note);
         this.notifyListeners();
     },
