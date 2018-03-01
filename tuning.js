@@ -61,7 +61,7 @@ let OctaveScale = {
     }
 };
 
-export default {
+module.exports = {
     /**
      * The equal temperament tuning system.
      */

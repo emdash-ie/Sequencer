@@ -1,8 +1,8 @@
-import Sequencer from "./sequencer.js";
-import Note from "./note.js";
-import NoteSequence from "./noteSequence.js";
-import Tuning from "./tuning.js";
-import {NoteDisplay} from "./noteDisplay.js";
+const Sequencer = require('./sequencer');
+const Note = require('./note');
+const NoteSequence = require('./noteSequence');
+const Tuning = require('./tuning');
+const NoteDisplay = require('./noteDisplay');
 
 let MajorPentatonicScale = Tuning.createOctaveScale({
     scaleNotes: [0, 2, 4, 7, 9],

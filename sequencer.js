@@ -249,7 +249,7 @@ let BeatTimeline = {
     }
 };
 
-export default {
+module.exports = {
     /**
      * Creates a new sequencer, an object which plays a sequence of notes.
      *

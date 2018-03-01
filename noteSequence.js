@@ -1,4 +1,4 @@
-import Note from "./note.js"
+const Note = require('./note');
 
 /**
  * A basic representation of a sequence of notes, that uses a linear search to
@@ -100,7 +100,7 @@ let BasicNoteSequence = {
     }
 }
 
-export default {
+module.exports = {
     /**
      * Creates an empty sequence of notes.
      *

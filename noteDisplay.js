@@ -1,7 +1,7 @@
 /**
  * Displays notes from a note sequence in a canvas.
  */
-export class NoteDisplay {
+class NoteDisplay {
     /**
      * Creates a new NoteDisplay.
      *
@@ -250,3 +250,5 @@ NoteBlock.idGenerator = function*() {
 NoteBlock.nextId = function() {
     return NoteBlock.idGenerator.next().value;
 };
+
+module.exports = NoteDisplay;

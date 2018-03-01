@@ -1,4 +1,4 @@
-import Tuning from "./tuning.js";
+const Tuning = require('./tuning');
 
 /**
  * A basic note, which has a starting beat, a length, and a note number.
@@ -66,7 +66,7 @@ let SequencedNote = {
     }
 }
 
-export default {
+module.exports = {
     /**
      * Creates an empty sequence of notes.
      *
