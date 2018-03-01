@@ -1,0 +1,22 @@
+{
+  "name": "sequencer",
+  "version": "0.1.0",
+  "description": "A sequencer for writing and editing music.",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron ."
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/undergroundquizscene/Sequencer.git"
+  },
+  "author": "Noel Bourke",
+  "license": "GPL-3.0",
+  "bugs": {
+    "url": "https://github.com/undergroundquizscene/Sequencer/issues"
+  },
+  "homepage": "https://github.com/undergroundquizscene/Sequencer#readme",
+  "devDependencies": {
+    "electron": "^1.8.2"
+  }
+}
