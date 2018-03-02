@@ -1,15 +1,15 @@
-const {app, BrowserWindow} = require('electron');
-const url = require('url');
-const path = require('path');
+const {app, BrowserWindow} = require('electron')
+const url = require('url')
+const path = require('path')
 
 function createWindow() {
-    win = new BrowserWindow({width: 800, height: 600});
+	const win = new BrowserWindow({width: 800, height: 600})
 
-    win.loadURL(url.format({
-        pathname: path.join(__dirname, 'demo.html'),
-        protocol: 'file:',
-        slashes: true,
-    }));
+	win.loadURL(url.format({
+		pathname: path.join(__dirname, 'demo.html'),
+		protocol: 'file:',
+		slashes: true,
+	}))
 }
 
-app.on('ready', createWindow);
+app.on('ready', createWindow)
