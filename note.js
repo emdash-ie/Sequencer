@@ -22,7 +22,7 @@ function createNote({start=0, length=1, number=0}) {
  * A note with a specific pitch – a combination of a name and a tuning system
  * which relates the name to a pitch.
  */
-let PitchedNote = {
+let PitchedNote = {  // eslint-disable-line no-unused-vars
 	/**
 	 * Creates a new pitched note.
 	 *
@@ -43,7 +43,7 @@ let PitchedNote = {
 /**
  * A note which has a pitch and a start and end beat.
  */
-let SequencedNote = {
+let SequencedNote = {  // eslint-disable-line no-unused-vars
 	/**
 	 * Creates a new sequenced note.
 	 *

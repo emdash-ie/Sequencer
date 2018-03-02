@@ -1,5 +1,3 @@
-const Note = require('./note')
-
 /**
  * A basic representation of a sequence of notes, that uses a linear search to
  * find and add notes.
