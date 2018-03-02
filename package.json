@@ -5,7 +5,7 @@
   "main": "main.js",
   "scripts": {
     "start": "electron .",
-    "test": "./node_modules/.bin/eslint *.js && tape test/*.js | tap-min"
+    "test": "eslint *.js && tape test/*.js | tap-min"
   },
   "repository": {
     "type": "git",
