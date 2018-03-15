@@ -43,6 +43,7 @@ class NoteDisplay {
 		s.addEventListener('dragenter', this.dragOverListener, false)
 		s.addEventListener('dragover', this.dragOverListener, false)
 		s.addEventListener('drop', this.dropListener.bind(this), false)
+		s.addEventListener('click', this.clickListener.bind(this), false)
 	}
 
 	/**
@@ -98,6 +99,30 @@ class NoteDisplay {
 			newStart: newValues.beat,
 			newPitch: newValues.pitch
 		})
+	}
+
+	clickListener(clickEvent) {
+		const [x, y] = [clickEvent.clientX, clickEvent.clientY]
+		if (this.pointNotCovered(x, y)) {
+			const {beat, pitch} = this.converter.inputValuesFor({
+				'beat': x,
+				'pitch': y,
+			})
+			this.sequence.addNote({
+				start: beat,
+				number: pitch,
+				length: 1,
+			})
+		}
+	}
+
+	pointNotCovered(x, y) {
+		for (const [id, block] of this.blocks) {
+			if (block.overlapsWith(x, y)) {
+				return false
+			}
+		}
+		return true
 	}
 
 	/**
@@ -197,6 +222,11 @@ class NoteBlock {
 	constructor({top, left, height, width, unit}) {
 		this.id = NoteBlock.nextId()
 
+		this.top = top
+		this.left = left
+		this.height = height
+		this.width = width
+
 		this.element = document.createElement('div')
 		this.element.style.position = 'absolute'
 		this.element.style.height = height + unit
@@ -230,6 +260,11 @@ class NoteBlock {
 			'x': e.clientX - parseInt(this.element.style.left),
 			'y': e.clientY - parseInt(this.element.style.top)
 		}
+	}
+
+	overlapsWith(x, y) {
+		return this.top < x && x < this.top + this.height
+			&& this.left < y && y < this.left + this.width
 	}
 }
 
