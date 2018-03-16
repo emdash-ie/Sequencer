@@ -88,14 +88,14 @@ class NoteDisplay {
 	}
 
 	dropListener(event) {
-		let blockId = Number(event.dataTransfer.getData('application/note-id'))
-		let block = this.blocks.get(blockId)
+		let blockID = Number(event.dataTransfer.getData('application/note-id'))
+		let block = this.blocks.get(blockID)
 		const newValues = this.converter.inputValuesFor({
 			'beat': event.clientX - block.dragOffset.x,
 			'pitch': event.clientY - block.dragOffset.y
 		})
 		this.sequence.moveNote({
-			note: this.notes.get(blockId),
+			note: this.notes.get(blockID),
 			newStart: newValues.beat,
 			newPitch: newValues.pitch
 		})
@@ -118,7 +118,7 @@ class NoteDisplay {
 				length: 1,
 			})
 		} else {
-			const note = this.notes.get(Number(click.target.dataset.blockId))
+			const note = this.notes.get(Number(click.target.dataset.blockID))
 			this.sequence.removeNote(note)
 		}
 	}
@@ -232,7 +232,7 @@ class NoteBlock {
 		this.element.style.left = left + unit
 		this.element.style.top = top + unit
 		this.element.style.background = 'blue'
-		this.element.dataset.blockId = this.id
+		this.element.dataset.blockID = this.id
 
 		this.element.setAttribute('draggable', 'true')
 		this.element.addEventListener(
