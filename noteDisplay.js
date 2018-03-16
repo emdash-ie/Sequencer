@@ -107,34 +107,15 @@ class NoteDisplay {
 	 * @param  {MouseEvent} clickEvent The click event that was fired.
 	 */
 	clickListener(clickEvent) {
-		const [x, y] = [clickEvent.clientX, clickEvent.clientY]
-		if (this.pointNotCovered(x, y)) {
-			const {beat, pitch} = this.converter.inputValuesFor({
-				'beat': x,
-				'pitch': y,
-			})
-			this.sequence.addNote({
-				start: beat,
-				number: pitch,
-				length: 1,
-			})
-		}
-	}
-
-	/**
-	 * Checks whether a point onscreen is not covered by a block.
-	 *
-	 * @param  {Number} x The x-coordinate of the point.
-	 * @param  {Number} y The y-coordinate of the point.
-	 * @return {Boolean} True if the point is not covered, false if it is.
-	 */
-	pointNotCovered(x, y) {
-		for (const [id, block] of this.blocks) {
-			if (block.overlapsWith(x, y)) {
-				return false
-			}
-		}
-		return true
+		const {beat, pitch} = this.converter.inputValuesFor({
+			beat: clickEvent.clientX,
+			pitch: clickEvent.clientY,
+		})
+		this.sequence.addNote({
+			start: beat,
+			number: pitch,
+			length: 1,
+		})
 	}
 
 	/**
@@ -272,11 +253,6 @@ class NoteBlock {
 			'x': e.clientX - parseInt(this.element.style.left),
 			'y': e.clientY - parseInt(this.element.style.top)
 		}
-	}
-
-	overlapsWith(x, y) {
-		return this.top < x && x < this.top + this.height
-			&& this.left < y && y < this.left + this.width
 	}
 }
 
