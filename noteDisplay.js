@@ -104,12 +104,12 @@ class NoteDisplay {
 	/**
 	 * Adds a note to the note sequence when the grid is clicked.
 	 *
-	 * @param  {MouseEvent} clickEvent The click event that was fired.
+	 * @param  {MouseEvent} click The click event that was fired.
 	 */
-	clickListener(clickEvent) {
+	clickListener(click) {
 		const {beat, pitch} = this.converter.inputValuesFor({
-			beat: clickEvent.clientX,
-			pitch: clickEvent.clientY,
+			beat: click.clientX,
+			pitch: click.clientY,
 		})
 		this.sequence.addNote({
 			start: beat,
