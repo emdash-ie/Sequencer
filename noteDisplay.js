@@ -107,15 +107,17 @@ class NoteDisplay {
 	 * @param  {MouseEvent} click The click event that was fired.
 	 */
 	clickListener(click) {
-		const {beat, pitch} = this.converter.inputValuesFor({
-			beat: click.clientX,
-			pitch: click.clientY,
-		})
-		this.sequence.addNote({
-			start: beat,
-			number: pitch,
-			length: 1,
-		})
+		if (click.target == click.currentTarget) {
+			const {beat, pitch} = this.converter.inputValuesFor({
+				beat: click.clientX,
+				pitch: click.clientY,
+			})
+			this.sequence.addNote({
+				start: beat,
+				number: pitch,
+				length: 1,
+			})
+		}
 	}
 
 	/**
