@@ -29,7 +29,7 @@ class NoteDisplay {
 			'pitch': {
 				'zero': 400,
 				'scaling': -20,
-				'clip': 10,
+				'clip': 20,
 			}
 		})
 		this.sequence.addChangeListener(this)
