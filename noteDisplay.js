@@ -19,7 +19,6 @@ class NoteDisplay {
 		this.xSize = xSize
 		this.ySize = ySize
 		this.blocks = new Map()
-		this.elementBlocks = new Map()
 		this.notes = new Map()
 		this.converter = new ClippingLinearScaler({
 			'beat': {
@@ -70,7 +69,6 @@ class NoteDisplay {
 				unit: 'px',
 			})
 			this.blocks.set(block.id, block)
-			this.elementBlocks.set(block.element, block)
 			this.notes.set(block.id, note)
 			block.displayOn(this.surface)
 		}
@@ -120,8 +118,7 @@ class NoteDisplay {
 				length: 1,
 			})
 		} else {
-			const block = this.elementBlocks.get(click.target)
-			const note = this.notes.get(block.id)
+			const note = this.notes.get(Number(click.target.dataset.blockId))
 			this.sequence.removeNote(note)
 		}
 	}
@@ -235,6 +232,7 @@ class NoteBlock {
 		this.element.style.left = left + unit
 		this.element.style.top = top + unit
 		this.element.style.background = 'blue'
+		this.element.dataset.blockId = this.id
 
 		this.element.setAttribute('draggable', 'true')
 		this.element.addEventListener(
