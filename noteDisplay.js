@@ -154,7 +154,7 @@ class LinearScaler {
 		for (let unit in inputValues) {
 			if (this.units[unit] != undefined) {
 				outputValues[unit] = this.units[unit].zero
-                    + this.units[unit].scaling * inputValues[unit]
+					+ this.units[unit].scaling * inputValues[unit]
 			}
 		}
 
