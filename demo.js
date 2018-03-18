@@ -41,8 +41,8 @@ let noteSurface = document.querySelector('#noteSurface')
 let noteDisplay = new NoteDisplay({
 	noteSurface: noteSurface,
 	noteSequence: noteSequence,
-	xSize: 400/8,
-	ySize: 400/6
+	xSize: 40,
+	ySize: 20
 })
 noteDisplay.drawNotes()
 
