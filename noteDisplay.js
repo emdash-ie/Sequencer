@@ -16,22 +16,10 @@ class NoteDisplay {
 		this.surface.style.position = 'relative'
 		this.addSurfaceListeners()
 		this.sequence = noteSequence
-		this.xSize = xSize
-		this.ySize = ySize
+		this.xGridSize = xSize
+		this.yGridSize = ySize
 		this.blocks = new Map()
 		this.notes = new Map()
-		this.converter = new ClippingLinearScaler({
-			'beat': {
-				'zero': 40,
-				'scaling': 40,
-				'clip': 20,
-			},
-			'pitch': {
-				'zero': 400,
-				'scaling': -20,
-				'clip': 20,
-			}
-		})
 		this.sequence.addChangeListener(this)
 	}
 
@@ -53,19 +41,16 @@ class NoteDisplay {
 		let notes = this.sequence.getNotes({startBeat: 0, endBeat: 8})
 
 		for (let note of notes) {
-			let startPosition = this.converter.outputValuesFor({
-				beat: note.start,
-				pitch: note.number
-			})
-			let endPosition = this.converter.outputValuesFor({
-				beat: note.start + note.length,
-				pitch: note.number + 1
+			const {top, right, bottom, left} = this.rectFromNote({
+				start: note.start,
+				length: note.length,
+				pitch: note.number,
 			})
 			let block = new NoteBlock({
-				top: startPosition.pitch,
-				left: startPosition.beat,
-				height: Math.abs(endPosition.pitch - startPosition.pitch),
-				width: Math.abs(endPosition.beat - startPosition.beat),
+				top,
+				left,
+				height: bottom - top,
+				width: right - left,
 				unit: 'px',
 			})
 			this.blocks.set(block.id, block)
@@ -89,15 +74,12 @@ class NoteDisplay {
 
 	dropListener(event) {
 		let blockID = Number(event.dataTransfer.getData('application/note-id'))
-		let block = this.blocks.get(blockID)
-		const newValues = this.converter.inputValuesFor({
-			'beat': event.clientX - block.dragOffset.x,
-			'pitch': event.clientY - block.dragOffset.y
-		})
+		const beat = this.xToBeat(event.clientX)
+		const pitch = this.yToPitch(event.clientY)
 		this.sequence.moveNote({
 			note: this.notes.get(blockID),
-			newStart: newValues.beat,
-			newPitch: newValues.pitch
+			newStart: beat,
+			newPitch: pitch
 		})
 	}
 
@@ -108,10 +90,8 @@ class NoteDisplay {
 	 */
 	clickListener(click) {
 		if (click.target == click.currentTarget) {
-			const {beat, pitch} = this.converter.inputValuesFor({
-				beat: click.clientX,
-				pitch: click.clientY,
-			})
+			const beat = this.xToBeat(click.clientX)
+			const pitch = this.yToPitch(click.clientY)
 			this.sequence.addNote({
 				start: beat,
 				number: pitch,
@@ -130,76 +110,38 @@ class NoteDisplay {
 		this.deleteBlocks()
 		this.drawNotes()
 	}
-}
 
-/**
- * Converts units using linear relationships.
- *
- * @param units An object where each property describes a unit to provide
- *            scaling for.
- */
-class LinearScaler {
-	constructor(units) {
-		this.units = units
+	get yZero() {
+		return this.surface.getBoundingClientRect().bottom
 	}
 
-	/**
-         * Calculates the output values for a set of input values.
-         */
-	outputValuesFor(inputValues) {
-		let outputValues = {}
+	yToPitch(yCoordinate) {
+		return Math.floor((this.yZero - yCoordinate) / this.yGridSize)
+	}
 
-		for (let unit in inputValues) {
-			if (this.units[unit] != undefined) {
-				outputValues[unit] = this.units[unit].zero
-					+ this.units[unit].scaling * inputValues[unit]
-			}
+	pitchToY(pitch) {
+		return this.yZero - (pitch * this.yGridSize)
+	}
+
+	get xZero() {
+		return this.surface.getBoundingClientRect().left
+	}
+
+	xToBeat(xCoordinate) {
+		return Math.floor((xCoordinate - this.xZero) / this.xGridSize)
+	}
+
+	beatToX(beat) {
+		return (beat * this.xGridSize) + this.xZero
+	}
+
+	rectFromNote({start, length, pitch}) {
+		return {
+			top: this.pitchToY(pitch + 1),
+			right: this.beatToX(start + length),
+			bottom: this.pitchToY(pitch),
+			left: this.beatToX(start),
 		}
-
-		return outputValues
-	}
-
-	/**
-         * Calculates the input values for a set of output values.
-         */
-	inputValuesFor(outputValues) {
-		let inputValues = {}
-
-		for (let unit in outputValues) {
-			if (this.units[unit] != undefined) {
-				inputValues[unit] = (outputValues[unit] - this.units[unit].zero)
-                    / this.units[unit].scaling
-			}
-		}
-
-		return inputValues
-	}
-}
-
-class ClippingLinearScaler {
-	constructor(units) {
-		this.units = units
-		this.scaler = new LinearScaler(units)
-	}
-
-	outputValuesFor(inputValues) {
-		return this.scaler.outputValuesFor(inputValues)
-	}
-
-	inputValuesFor(outputValues) {
-		for (const unit in outputValues) {
-			outputValues[unit] = this.round({
-				value: outputValues[unit],
-				precision: this.units[unit].clip,
-				offset: this.units[unit].zero,
-			})
-		}
-		return this.scaler.inputValuesFor(outputValues)
-	}
-
-	round({value, precision, offset}) {
-		let rounded = Math.round((value - offset) / precision)
-		return (rounded * precision) + offset
 	}
 }
 
@@ -255,10 +197,6 @@ class NoteBlock {
 
 	dragListener(e) {
 		e.dataTransfer.setData('application/note-id', this.id)
-		this.dragOffset = {
-			'x': e.clientX - parseInt(this.element.style.left),
-			'y': e.clientY - parseInt(this.element.style.top)
-		}
 	}
 }
 
